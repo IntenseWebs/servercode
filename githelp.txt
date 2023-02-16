@@ -15,9 +15,9 @@ git commit -a
 git log
 
 # ON BRANCH
-git clone ssh://git@192.168.1.123/~/servercode servercode
+git clone ssh://git@git.intensewebs.com/~/Repos/servercode servercode
 # After changes on remote branch open bash terminal
-cd /c/Users/privacy/Documents/REPOS/SERVERCODE
+cd /c/Users/privacy/Documents/Repos/servercode
 git commit -a
 
 git push origin master:refs/heads/upload
