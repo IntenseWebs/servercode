@@ -1,0 +1,66 @@
+cat /etc/system-release
+
+# Checks Intel
+grep -e 'vmx' /proc/cpuinfo
+# Checks AMD-V
+grep -e 'svm' /proc/cpuinfo
+lscpu | grep Virtualization
+lsmod | grep kvm
+
+sudo dnf install virt-install virt-viewer -y
+sudo dnf install libvirt -y
+sudo dnf install virt-manager -y
+sudo dnf install -y virt-top libguestfs-tools -y
+sudo systemctl start libvirtd
+sudo systemctl enable --now libvirtd
+# ADD username to groups
+sudo usermod -a -G libvirt,kvm $USER
+sudo reboot
+
+# create file if not created
+sudo vi /etc/sysctl.d/bridge.conf
+# add the following lines
+net.bridge.bridge-nf-call-ip6tables=0
+net.bridge.bridge-nf-call-iptables=0
+net.bridge.bridge-nf-call-arptables=0
+# create file if not created
+sudo vi /etc/udev/rules.d/99-bridge.rules
+# add the following lines
+ACTION=="add", SUBSYSTEM=="module", KERNEL=="br_netfilter", RUN+="/sbin/sysctl -p /etc/sysctl.d/bridge.conf"
+# REBOOT SYSTEM
+
+su - root
+nmcli connection add type bridge autoconnect yes con-name br0 ifname br0
+nmcli connection modify br0 ipv4.addresses 192.168.1.121/24 ipv4.method manual
+nmcli connection modify br0 ipv4.gateway 192.168.1.131
+nmcli connection modify br0 ipv4.dns 192.168.1.131
+#FIND Network Adapter to delete before bridging. Be on server as root.
+nmcli connection del enp4s0
+nmcli connection add type bridge-slave autoconnect yes con-name enp4s0 ifname enp4s0 master br0
+nmcli connection up br0
+ip a
+ip addr show
+nmcli connection show
+reboot
+
+# Create file
+sudo vi /etc/libvirt/qemu/networkshost-bridge.xml
+#Add the following lines:
+<network>
+  <name>host-bridge</name>
+  <forward mode="bridge"/>
+  <bridge name="br0"/>
+</network>
+#Run the following commands to start the newly created bridge and make it as default bridge for VMs:
+sudo virsh net-define /etc/libvirt/qemu/networkshost-bridge.xml
+sudo virsh net-start /etc/libvirt/qemu/networkshost-bridge
+sudo virsh net-autostart /etc/libvirt/qemu/networkshost-bridge
+virsh net-list --all
+
+virsh net-list --all
+ip link
+virsh net-destroy default
+virsh net-undefine default
+ip link delete virbr0 type bridge
+ip link delete virbr0-nic
+ip link

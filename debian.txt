@@ -1,0 +1,42 @@
+# DEBIAN--LOGIN AS ROOT--------------------------------------------------------
+apt update -y
+apt install sudo
+usermod -aG sudo intensewebsites
+
+# ADD username to /etc/sudoers right under root user
+vi /etc/sudoers
+# username    ALL=(ALL)       ALL
+
+
+sudo vi /etc/network/interfaces
+
+
+#ADD similar to this.
+source /etc/network/interfaces.d/*
+auto lo
+iface lo inet loopback
+allow-hotplug eth0
+
+cd /etc/network/interfaces.d
+sudo vi /etc/network/interfaces.d/eth0
+iface eth0 inet static
+      address 192.168.1.103
+      netmask 255.255.255.0
+      gateway 192.168.1.1
+      dns-domain yourdomainname.com
+      dns-nameservers 9.9.9.9 149.112.112.112
+
+sudo vi /etc/resolv.conf
+domain yourdomainname.com
+search yourdomainname.com
+nameserver 24.48.160.2
+nameserver 24.48.160.3
+nameserver 9.9.9.9
+nameserver 149.112.112.112
+
+sudo vi /etc/hosts
+# ADD 192.168.1.103 ctp1.intensewebs.com ctp1
+
+sudo vi /etc/hostname
+
+sudo systemctl restart networking
