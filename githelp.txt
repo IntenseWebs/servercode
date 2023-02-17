@@ -2,10 +2,7 @@ git config --global user.name "IntenseWebs"
 git config --global user.email intenseWebs.com
 git status
 
-sudo dnf install git-all
-sudo apt install git-all
-
-git init SERVERCODE
+git init servercode
 git status
 git config --list
 git add *
@@ -15,17 +12,23 @@ git commit -a
 git log
 
 # ON BRANCH
-git clone ssh://git@git.intensewebs.com/~/Repos/servercode servercode
+git clone ssh://git@192.168.1.122/~/servercode servercode
 # After changes on remote branch open bash terminal
-cd /c/Users/privacy/Documents/Repos/servercode
+cd /c/Users/privacy/Documents/REPOS/servercode
 git commit -a
-
+git commit * -m "Updating . . ."
 git push origin master:refs/heads/upload
 
+
 # ON MASTER
-cd SERVERCODE
+cd servercode
 git merge upload
 
-git remote add origin git@github.com:IntenseWebs/servercode.git
+$ cd ~/Repos/servercode
+$ git remote add origin git@github.com:intenseweb/servercode.git
+$ git push --mirror -u origin
 
-git push -f origin main
+git clone git@github.com:IntenseWebs/servercode.git
+git branch -a
+git pull --rebase git@github.com:IntenseWebs/servercode.git
+git push
