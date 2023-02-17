@@ -22,8 +22,10 @@ git commit -a
 
 git push origin master:refs/heads/upload
 
-
-
 # ON MASTER
 cd SERVERCODE
 git merge upload
+
+git remote add origin git@github.com:IntenseWebs/servercode.git
+
+git push -f origin main

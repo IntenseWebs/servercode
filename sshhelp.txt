@@ -31,6 +31,7 @@ systemctl restart ssh
 
 # MANUAL run ssh-agent and add ssh private key.
 eval "$(ssh-agent -s)"
+chmod 600 /c/Users/username/Documents/SETTINGS/id_rsa
 ssh-add /c/Users/username/Documents/SETTINGS/id_rsa
 
 
@@ -84,3 +85,4 @@ Running  ssh-agent          OpenSSH Authentication Agent
 
 ssh-add -l
 ssh-add -L
+
