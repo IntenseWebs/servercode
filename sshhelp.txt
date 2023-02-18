@@ -34,6 +34,7 @@ cd ~
 chmod go-w ~/
 chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
+ssh-copy-id -i ~/.ssh/id_rsa.pub iw@192.168.1.14
 
 # DISABLE SSH PASSWORDS - Only uses Public w/Private Keys for SSH. Local Console logins with passwords is still allowed.
 su - root
