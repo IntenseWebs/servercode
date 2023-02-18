@@ -1,18 +1,3 @@
-https://superuser.com/questions/1395962/is-it-possible-to-update-the-built-in-openssh-client-in-windows-10/1555453#1555453
-
-
-#    Remove the default version of OpenSSH:
-Remove-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
-#    Install the recent version using Windows Package Manager:
-winget install openssh
-# OR manually from GitHub (see Install Win32 OpenSSH Using MSI)
-# Add it to path:
-
-[Environment]::SetEnvironmentVariable("Path", 
-$env:Path + ';' + ${Env:ProgramFiles} + '\OpenSSH', 
-[System.EnvironmentVariableTarget]::
-
-
 ssh-keygen -t rsa -b 4096 -C "user@website.com"
 
 # Generate OpenSSH Private Key id_rsa and Public Key id_rsa.pub
@@ -34,7 +19,7 @@ cd ~
 chmod go-w ~/
 chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
-ssh-copy-id -i ~/.ssh/id_rsa.pub iw@192.168.1.14
+ssh-copy-id -i ~/.ssh/id_rsa.pub iw@192.168.1.141
 
 # DISABLE SSH PASSWORDS - Only uses Public w/Private Keys for SSH. Local Console logins with passwords is still allowed.
 su - root
