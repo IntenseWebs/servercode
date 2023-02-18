@@ -25,7 +25,9 @@ git push origin master:refs/heads/upload
 git pull origin master
 
 # ON MASTER
-cd ~\Repos\servercode
+cd ~/Repos/servercode
+git merge upload
+
 # ONLY IF CHANGED ON GITHUB
 git pull git@github.com:IntenseWebs/servercode.git
 
