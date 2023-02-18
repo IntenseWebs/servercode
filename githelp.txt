@@ -15,9 +15,12 @@ git log
 git clone ssh://git@192.168.1.122/~/servercode servercode
 # After changes on remote branch open bash terminal
 git remote -v
+
+# PUSH TO ORIGIN
 cd /c/Users/privacy/Documents/REPOS/servercode
 git commit -a
 git commit * -m "Updating . . ."
+git remote -v
 git push origin master:refs/heads/upload
 git pull origin master
 
