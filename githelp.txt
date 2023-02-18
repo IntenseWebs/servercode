@@ -11,24 +11,30 @@ git commit * -m "Initial Commit"
 git commit -a
 git log
 
-# ON BRANCH
+# CLONE ON BRANCH
 git clone ssh://git@192.168.1.122/~/servercode servercode
 # After changes on remote branch open bash terminal
+git remote -v
 cd /c/Users/privacy/Documents/REPOS/servercode
 git commit -a
 git commit * -m "Updating . . ."
 git push origin master:refs/heads/upload
-
+git pull origin master
 
 # ON MASTER
-cd servercode
-git merge upload
+cd ~\Repos\servercode
+# ONLY IF CHANGED ON GITHUB
+git pull git@github.com:IntenseWebs/servercode.git
 
+#PUSH TO GITHUB
 $ cd ~/Repos/servercode
 $ git remote add origin git@github.com:intenseweb/servercode.git
 $ git push --mirror -u origin
 
+# CLONE FROM GITHUB
 git clone git@github.com:IntenseWebs/servercode.git
 git branch -a
+
+# GIT CHANGES FROM GETHUB - ***DANGEROUS***
 git pull --rebase git@github.com:IntenseWebs/servercode.git
 git push
