@@ -8,6 +8,7 @@ vi /etc/sudoers
 
 #Some Debian distro's like Ubuntu have NETPLAN in /etc/netplan - IF SO, USE UBUNTU NETWORK INSTRUCTIONS
 
+sudo apt update && sudo apt upgrade -y
 sudo vi /etc/network/interfaces
 
 #ADD similar to this.
@@ -22,7 +23,7 @@ iface eth0 inet static
       netmask 255.255.255.0
       gateway 192.168.1.1
       dns-domain yourdomainname.com
-      dns-nameservers 9.9.9.9 149.112.112.112
+      dns-nameservers 192.168.1.140 192.168.1.141
 
 sudo vi /etc/resolv.conf
 domain yourdomainname.com

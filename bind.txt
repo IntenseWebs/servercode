@@ -4,11 +4,15 @@ https://www.linuxtechi.com/install-configure-bind-9-dns-server-ubuntu-debian/
 https://www.isc.org/bind/
 https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-debian-9
 
+# Misc re-used commands
+sudo systemctl status named
+sudo systemctl restart bind9
+sudo systemctl status bind9
 sudo service bind9 restart
 sudo named-checkconf
 sudo tail -f /var/log/syslog
 
-sudo apt update
+sudo apt update && sudo apt upgrade -y
 sudo apt install -y bind9 bind9utils bind9-doc dnsutils
 cd /etc/bind
 cd/etc/bind
@@ -44,7 +48,6 @@ options {
         dnssec-validation no;
 
         listen-on-v6 { any; };
-        listen-on port 53 { 127.0.0.1; 192.168.1.140; };
 };
 
 # NOTE: DNSSec disabled as it was found to cause issues for Ubuntu 20.04
@@ -58,12 +61,16 @@ options {
   
 zone "intensewebs.com" {
         type master;
-        file "/etc/bind/db.intensewebs.com";
+        file "/var/lib/bind/db.intensewebs.com";
+        allow-transfer { 192.168.1.141; };
+        also-notify { 192.168.1.141; };
 };
 
 zone "1.168.192.in-addr.arpa" {
         type master;
-        file "/etc/bind/db.1.168.192";
+        file "/var/lib/bind/db.1.168.192";
+        allow-transfer { 192.168.1.141; };
+        also-notify { 192.168.1.141; };
 };
 
  check the file for errors
@@ -153,3 +160,57 @@ sudo systemctl start bind9
  host git.intensewebs.com
  host 192.168.1.122
  ping www.amazon.com
+
+---------------------------------------
+
+SECONDARY
+sudo nano named.conf.local
+
+zone "intensewebs.com" {
+        type secondary;
+        file "/var/lib/bind/db.intensewebs.com";
+	masters { 192.168.1.140; };
+};
+
+zone "1.168.192.in-addr.arpa" {
+        type secondary;
+        file "/var/lib/bind/db.1.168.192";
+	masters { 192.168.1.140; };
+};
+
+sudo systemctl restart bind9
+sudo systemctl status bind9
+
+sudo vi /etc/bind/named.conf.options
+ 
+acl trustedclients {
+        localhost;
+        localnets;
+	192.168.1.140   #ns1.intensewebs.com
+	192.168.1.141   #ns2.intensewebs.com
+	192.168.1.142   #ns3.intensewebs.com
+	192.168.1.143   #ns4.intensewebs.com
+        192.168.1.0/24;
+        192.168.2.0/24;
+};
+
+options {
+        directory "/var/cache/bind";
+
+        recursion yes;
+        allow-query { trustedclients; };
+        allow-query-cache { trustedclients; };
+        allow-recursion { trustedclients; };
+
+        forwarders {
+                9.9.9.9;
+                149.112.112.112;
+        };
+
+        dnssec-validation no;
+
+        listen-on-v6 { any; };
+};
+
+
+
