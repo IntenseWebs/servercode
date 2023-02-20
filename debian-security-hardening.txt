@@ -1,0 +1,9 @@
+# apt config files - cd /etc/apt/apt.conf.d
+sudo apt install unattended-upgrades
+sudo dpkg-reconfigure -plow unattended-upgrades
+sudo vi /etc/apt/apt.conf.d/20auto-upgrades
+
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+
+sudo unattended-upgrade -d
