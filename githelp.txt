@@ -23,12 +23,13 @@ git remote -v
 git pull
 
 # PUSH TO ORIGIN
+git pull origin master
 cd /c/Users/privacy/Documents/REPOS/servercode
 git commit -a
 git commit * -m "Updating . . ."
 git remote -v
 git push origin master:refs/heads/upload
-git pull origin master
+
 
 # ON MASTER
 cd ~/Repos/servercode
