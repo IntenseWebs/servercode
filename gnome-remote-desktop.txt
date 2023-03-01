@@ -1,0 +1,5 @@
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/using_the_desktop_environment_in_rhel_8/accessing-the-desktop-remotely_using-the-desktop-environment-in-rhel-8
+
+firewall-cmd --permanent --add-service=vnc-server
+firewall-cmd --reload
+sudo firewall-cmd --zone=public --remove-service=vnc-server --permanent

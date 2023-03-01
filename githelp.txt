@@ -1,6 +1,5 @@
 # DELETE THIS LINE ***** GIT TEST
 
-
 git config --global user.name "IntenseWebs"
 git config --global user.email intenseWebs.com
 git status
@@ -39,9 +38,9 @@ git merge upload
 git pull git@github.com:IntenseWebs/servercode.git
 
 #PUSH TO GITHUB
-$ cd ~/Repos/servercode
-$ git remote add origin git@github.com:IntenseWebs/personal.git
-$ git push --mirror origin
+cd ~/Repos/servercode
+git remote add origin git@github.com:IntenseWebs/personal.git
+git push --mirror origin
 
 # CLONE FROM GITHUB
 git clone git@github.com:IntenseWebs/servercode.git

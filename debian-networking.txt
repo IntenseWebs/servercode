@@ -40,3 +40,7 @@ sudo vi /etc/hostname
 ns2.intensewebs.com
 
 sudo systemctl restart networking
+
+# MANUAL IPV6
+nmcli con mod enp1s0 ipv6.addresses "2a22:1d0:5222:4::22f2/64" gw6 "2a22:1d0:5222:4::22f0/64"
+nmcli con mod enp1s0 ipv6.method manual
