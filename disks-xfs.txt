@@ -1,0 +1,7 @@
+https://terminaltolinux.com/2021/05/24/extend-root-lvm-configured-partition-rhel8-rhel7-centos-8-centos-7-no-reboot-required/	
+https://www.redhat.com/sysadmin/resize-lvm-simple
+https://www.redhat.com/sysadmin/lvm-vs-partitioning
+
+growpart --dry-run /dev/nvme0n1 3
+lvextend -l +100%FREE /dev/almalinux_alma1/root
+xfs_growfs /dev/almalinux_alma1/root

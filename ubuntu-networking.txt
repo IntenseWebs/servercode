@@ -1,0 +1,23 @@
+sudo apt install yamllint
+cd /etc/netplan
+ls -al
+# FIND *.YAML FILE and edit it
+sudo vi /etc/netplan 00-installer-config.yaml
+
+# This is the network config written by 'subiquity
+---
+network:
+  ethernets:
+    enp1s0:
+      addresses:
+        - 192.168.1.123/24
+      gateway4: 192.168.1.131
+      nameservers:
+        addresses:
+          - 192.168.1.140
+          - 192.168.1.141
+        search:
+          - intensewebs.com
+  version: 2
+
+sudo netplan apply

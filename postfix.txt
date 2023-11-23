@@ -1,0 +1,58 @@
+https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-postfix-as-a-send-only-smtp-server-on-debian-10
+https://www.makeuseof.com/postfix-mail-server-setup-on-debian/
+https://wiki.debian.org/Postfix
+
+sudo apt install mailutils
+sudo apt install postfix
+sudo apt remove sendmail
+# REBOOT & Check to see if Postfix is running
+sudo cat /var/log/mail.log
+sudo vim /etc/postfix/main.cf
+
+    You should see: 
+
+Trying 127.0.0.1...
+Connected to localhost.localdomain.
+Escape character is '^]'.
+220 server1.example.com ESMTP Postfix (Debian/GNU)
+
+    Send an email to yourself: 
+
+mail from:<you@youremail.com>
+rcpt to:<user@example.com>
+data
+To: user@example.com
+From: you@youremail.com
+Subject: Hey my first email
+This is my first email on debian postfix after installing configuring it.
+It was easy.
+    To end data hit enter, type in a dot, and hit enter again: 
+
+.
+
+    Then 
+
+quit
+# DNS
+
+host -t MX yourdomain.tld
+
+sudo vi     /etc/postfix/main.cf: 
+
+smtpd_recipient_restrictions = reject_invalid_hostname,
+        reject_unknown_recipient_domain,
+        reject_unauth_destination,
+        reject_rbl_client sbl.spamhaus.org,
+        permit
+
+smtpd_helo_restrictions = reject_invalid_helo_hostname,
+        reject_non_fqdn_helo_hostname,
+        reject_unknown_helo_hostname
+
+smtpd_client_restrictions = reject_rbl_client dnsbl.sorbs.net
+
+
+sudo dpkg-reconfigure postfix
+sudo postfix reload
+telnet localhost 25
+telnet localhost 25

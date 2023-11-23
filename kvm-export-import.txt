@@ -1,0 +1,33 @@
+# EXAMPLE virsh dumpxml vm_name | less
+virsh dumpxml ubuntu20.04-clone | grep -i "source"
+virsh dumpxml ubuntu20.04-clone | grep -i "MEMORY"
+# If you prefer Virt-manager, then you can grab this information in XML format by pressing the XML tab under the "show virtual hardware" section.
+cd /var/lib/libvirt/images/
+virsh dumpxml ubuntu20.04-clone | less
+
+# If you have used different paths to store the disk images and if you wish to know all the VM disk paths, then you can run the following snippet from the terminal or from the shell script.
+VM_NAMES=($(virsh list --all| awk '(NR>2)' | awk '{ print $2 }'))
+
+for VM in ${VM_NAMES[@]}; do
+  DISK_PATH=$(virsh dumpxml ${VM} | grep -i "<source file")
+  echo "${VM} ${DISK_PATH}"
+done | column -t
+
+-------------------------------------------------
+# EXPORT
+sudo virsh dumpxml git > ~/Documents/git.xml
+sudo virsh dumpxml ns1 > ~/Documents/ns1.xml
+sudo virsh dumpxml ns2 > ~/Documents/ns2.xml
+sudo cp /var/lib/libvirt/images/git.qcow2 ~/Documents/
+sudo cp /var/lib/libvirt/images/ns1.qcow2 ~/Documents/
+sudo cp /var/lib/libvirt/images/ns2.qcow2 ~/Documents/
+# chown to your username and copy off machine
+
+# IMPORT
+cd /var/lib/libvirt/images/
+sudo virsh define –file ~/Documents/git.xml
+sudo virsh define –file ~/Documents/ns1.xml
+sudo virsh define –file ~/Documents/ns2.xml
+sudo cp ~/Documents/git.qcow2 /var/lib/libvirt/images/
+sudo cp ~/Documents/ns1.qcow2 /var/lib/libvirt/images/
+sudo cp ~/Documents/ns2.qcow2 /var/lib/libvirt/images/

@@ -1,0 +1,37 @@
+sudo dnf update && sudo dnf upgrade
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index
+# Shell 'nmtui' is recommended method if if installing BRIDGE with slave network apapter using static IP address. Below method is manual edit of config files.
+
+sudo hostnamectl set-hostname new.name
+sudo vi /etc/resolv.conf
+domain yourdomainname.com
+search yourdomainname.com
+nameserver 9.9.9.9
+nameserver 149.112.112.112
+
+sudo vi /etc/hosts
+# ADD/CHANGE
+192.168.1.103 ctp1.intensewebs.com ctp1
+
+sudo vi /etc/hostname
+# ADD/CHANGE
+ctp1.intensewebs.com
+
+sudo systemctl restart networking
+
+
+ip link list
+ip link show
+sudo nmcli device status
+sudo nmcli connection modify Example-Connection ipv4.addresses 192.168.1.124/24
+sudo nmcli connection modify Example-Connection ipv6.addresses 2001:db8:1::1/64
+sudo nmcli connection modify Example-Connection ipv4.method manual
+sudo nmcli connection modify Example-Connection ipv6.method manual
+sudo nmcli connection modify Example-Connection ipv4.gateway 192.168.1.131
+sudo nmcli connection modify Example-Connection ipv6.gateway 2001:db8:1::fffe
+sudo nmcli connection modify Example-Connection ipv4.dns "192.168.1.140"
+sudo nmcli connection modify Example-Connection ipv6.dns "2001:db8:1::ffbb"
+sudo nmcli connection modify Example-Connection ipv4.dns-search example.com
+sudo nmcli connection modify Example-Connection ipv6.dns-search example.com
+sudo nmcli connection up Example-Connection
+sudo nmcli device status

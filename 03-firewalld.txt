@@ -1,0 +1,34 @@
+sudo apt update
+sudo apt install firewalld
+sudo systemctl enable firewalld
+sudo apt install firewall-config
+sudo apt install system-config-firewall-tui
+
+sudo systemctl stop firewalld.service
+sudo systemctl disable firewalld.service
+apt policy firewalld
+firewall-cmd --permanent --add-port=80/tcp
+firewall-cmd --permanent --add-port=443/tcp
+firewall-cmd --reload
+sudo firewall-cmd --state
+firewall-cmd --list-services
+firewall-cmd --list-all
+
+#VNC
+sudo firewall-cmd --zone=public --add-port 5901/tcp --permanent
+sudo firewall-cmd --zone=public --add-service=vnc-server --permanent
+sudo firewall-cmd --zone=public          192.168.1.0/24
+sudo firewall-cmd --reload
+
+firewall-cmd --permanent --add-service=vnc-server
+firewall-cmd --reload
+sudo firewall-cmd --zone=public --remove-service=vnc-server --permanent
+
+firewall-cmd --get-active-zones
+firewall-cmd --zone=public --list-all
+firewall-cmd --add-rich-rule='rule family=ipv4 service name=ssh log prefix="Dropped SSH" level="notice" limit value=5/m drop'
+firewall-cmd --add-rich-rule='rule family=ipv4 source address=10.1.111.21/24 service name=ssh log prefix="SSH Logs" level="notice" accept'
+firewall-cmd --zone=internal --add-source=192.168.1.0/24
+firewall-cmd --zone=public --remove-service=ssh
+firewall-cmd --zone=public --remove-service=dhcpv6-client
+firewall-cmd --runtime-to-permanent

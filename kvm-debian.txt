@@ -1,0 +1,63 @@
+# Checks Intel
+grep -e 'vmx' /proc/cpuinfo
+# Checks AMD-V
+grep -e 'svm' /proc/cpuinfo
+# Check both Intel and AMD
+lscpu | grep Virtualization
+lsmod | grep kvm
+
+sudo apt install qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils libguestfs-tools genisoimage virtinst libosinfo-bin virt-viewer -y
+sudo apt install virt-manager -y
+sudo systemctl start libvirtd
+sudo systemctl enable --now libvirtd
+# ADD username to groups as your own user - NOT root
+sudo usermod -a -G libvirt,kvm $USER
+sudo reboot
+
+# create file if not created
+sudo vi /etc/sysctl.d/bridge.conf
+# add the following lines
+net.bridge.bridge-nf-call-ip6tables=0
+net.bridge.bridge-nf-call-iptables=0
+net.bridge.bridge-nf-call-arptables=0
+# create file if not created
+sudo vi /etc/udev/rules.d/99-bridge.rules
+# add the following lines
+ACTION=="add", SUBSYSTEM=="module", KERNEL=="br_netfilter", RUN+="/sbin/sysctl -p /etc/sysctl.d/bridge.conf"
+# REBOOT SYSTEM
+
+**WARNING** Be on server as root. nmtui for graphical. RECOMMENDED using nmtui
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index#proc_configuring-a-network-bridge-by-using-nmtui_configuring-a-network-bridge
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index#configuring-a-network-bridge-by-using-nm-connection-editor_configuring-a-network-bridge
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index#proc_configuring-a-network-bridge-by-using-nmstatectl_configuring-a-network-bridge
+
+su - root
+nmcli con show
+ip link
+virsh net-list --all
+nmcli con del "Wired connection 1" # or delete UUID
+nmcli con add type bridge autoconnect yes con-name br0 ifname br0 stp no
+nmcli con add type bridge-slave autoconnect yes con-name eno1 ifname eno1 master br0
+nmcli con mod br0 ipv4.addresses 192.168.1.222/24 ipv4.method manual
+nmcli con mod br0 ipv4.gateway 192.168.1.131
+nmcli con mod br0 ipv4.dns "192.168.1.140 192.168.1.141 192.168.1.143 192.168.1.144"
+nmcli con mod br0 bridge.stp
+# nmcli con mod $connectionName ipv4.ignore-auto-dns yes
+nmcli con mod br0 bridge.stp no
+service NetworkManager restart
+nmcli device show
+nmcli -f bridge con show br0
+
+# Create file
+sudo vi /etc/libvirt/qemu/networkshost-bridge.xml
+#Add the following lines:
+<network>
+  <name>host-bridge</name>
+  <forward mode="bridge"/>
+  <bridge name="br0"/>
+</network>
+#Run the following commands to start the newly created bridge and make it as default bridge for VMs:
+sudo virsh net-define /etc/libvirt/qemu/networkshost-bridge.xml
+sudo virsh net-autostart host-bridge
+virsh net-destroy default
+virsh net-undefine default

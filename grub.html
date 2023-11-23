@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 7.4.7.2 (Linux)"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="2023-09-16T23:02:30.920913736"/>
+	<style type="text/css">
+		@page { size: 8.5in 11in; margin: 0.79in }
+		p { line-height: 115%; margin-bottom: 0.1in; background: transparent; background: transparent }
+		pre { background: transparent; background: transparent }
+		pre.western { font-family: "Liberation Mono", monospace; font-size: 10pt }
+		pre.cjk { font-family: "Noto Sans Mono CJK SC", monospace; font-size: 10pt }
+		pre.ctl { font-family: "Liberation Mono", monospace; font-size: 10pt }
+		a:link { color: #000080; text-decoration: underline }
+		a:visited { color: #800000; text-decoration: underline }
+	</style>
+</head>
+<body lang="en-US" link="#000080" vlink="#800000" dir="ltr"><pre class="western">su – root
+vi /etc/default/grub
+
+# UNCOMMENT
+GRUB_DISABLE_OS_PROBER=&quot;false&quot;
+
+# FIND DRIVE UUID THAT HAS WINDOWS
+
+blkid
+
+/dev/mapper/deb1--vg-swap_1: UUID=&quot;b7c4c5a4-40bd-4a4a-bfaa-226abf07df2e&quot; TYPE=&quot;swap&quot;
+/dev/sdb2: BLOCK_SIZE=&quot;512&quot; UUID=&quot;58F8B0AFF8B08CAE&quot; TYPE=&quot;ntfs&quot; PARTUUID=&quot;07d5ec7a-02&quot;
+/dev/sdb3: BLOCK_SIZE=&quot;512&quot; UUID=&quot;A4EA4330EA42FDD4&quot; TYPE=&quot;ntfs&quot; PARTUUID=&quot;07d5ec7a-03&quot;
+<b>/dev/sdb1: LABEL=&quot;System Reserved&quot; BLOCK_SIZE=&quot;512&quot; UUID=&quot;76D4AFBCD4AF7CCD&quot; TYPE=&quot;ntfs&quot; PARTUUID=&quot;07d5ec7a-01&quot;</b>
+/dev/mapper/deb1--vg-root: UUID=&quot;ac1e1092-e501-49bc-b839-67006ef89234&quot; BLOCK_SIZE=&quot;4096&quot; TYPE=&quot;ext4&quot;
+/dev/sda5: UUID=&quot;9xmigV-MtN3-tC0m-FjuC-He9P-MEGg-Fr4KLd&quot; TYPE=&quot;LVM2_member&quot; PARTUUID=&quot;928bac7e-05&quot;
+/dev/sda1: UUID=&quot;49a1c3fa-1bd5-489d-82d9-b2c6ce6f45e2&quot; BLOCK_SIZE=&quot;1024&quot; TYPE=&quot;ext2&quot; PARTUUID=&quot;928bac7e-01&quot;
+
+sudo apt install grub-customizer
+
+# EXAMPLE 1
+Name: Windows 10 Pro Boot Manager (on /dev/sdb1)
+Type: Other
+
+insmod part_msdos
+insmod ntfs
+set root='hd0,msdos1'
+if [ x$feature_platform_search_hint = xy ]; then
+  search --no-floppy --fs-uuid --set=root --hint-bios=hd0,msdos1 --hint-efi=hd0,msdos1 --hint-baremetal=ahci0,msdos1  76D4AFBCD4AF7CCD
+else
+  search --no-floppy --fs-uuid --set=root 76D4AFBCD4AF7CCD
+fi
+parttool ${root} hidden-
+drivemap -s (hd0) ${root}
+chainloader +1
+
+<img src="images/grub-2023-08-19%2016-42-12.png" name="Image2" align="left" width="520" height="457" border="0"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# EXAMPLE 2
+Name: Windows 10 Pro Boot Manager (on /dev/nvme0n1p1)
+Type: Other
+
+insmod part_gpt
+insmod fat
+search --no-floppy --fs-uuid --set=root BAE6-96B7
+chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+
+# EXAMPLE 3
+Name: Windows 10 Pro Boot Manager (on /dev/nvme0n1p1)
+Type: Other
+
+insmod part_gpt
+insmod fat
+search --no-floppy --fs-uuid --set=root EFC8-2865
+chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+
+
+<img src="images/grub-2023-08-19%2011-37-59.png" name="Image1" align="left" width="520" height="338" border="0"/>
+</pre>
+</body>
+</html>

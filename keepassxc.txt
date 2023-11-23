@@ -1,0 +1,16 @@
+# Add the OpenSSH RSA Private Key File to KeePassXC with the password you created for the private key.Check SSH-Agent options in KeePassXC to add or remove the keys at start and quit AND to add it to both Pageant and OpenSSH.
+
+sudo apt remove gnome-keyring
+sudo apt autoclean && sudo apt autoremove
+
+# Adding RSA Private Key to KeepassXC
+
+# LINUX
+keepassxc-cli attachment-import /home/privacy/Documents/KP/privacy.kdbx SSHGIT id_rsa git_id_rsa
+
+# WINDOWS
+"C:\YOUR DIRECTORY\KeePassXC\keepassxc-cli.exe" attachment-import C:\PORTABLE\KeePassXC\privacy.kdbx SSH id_rsa id_rsa
+
+keepassxc-cli ssh-agent-populate my_database.kdbx
+
+scp privacy-linux-sd.kdbx iw@dev1:/home/iw/Documents/KP/

@@ -1,0 +1,53 @@
+﻿# IN UEFI BIOS, change bootloader to Debian drive so it will boot debian.
+su – root
+vi /etc/default/grub
+# UNCOMMENT this line as such.
+GRUB_DISABLE_OS_PROBER="false"
+
+# FIND DRIVE UUID THAT HAS WINDOWS "ntfs"
+
+blkid
+
+/dev/mapper/deb1--vg-swap_1: UUID="b7c4c5a4-40bd-4a4a-bfaa-226abf07df2e" TYPE="swap"
+/dev/sdb2: BLOCK_SIZE="512" UUID="58F8B0AFF8B08CAE" TYPE="ntfs" PARTUUID="07d5ec7a-02"
+/dev/sdb3: BLOCK_SIZE="512" UUID="A4EA4330EA42FDD4" TYPE="ntfs" PARTUUID="07d5ec7a-03"
+/dev/sdb1: LABEL="System Reserved" BLOCK_SIZE="512" UUID="76D4AFBCD4AF7CCD" TYPE="ntfs" PARTUUID="07d5ec7a-01"
+/dev/mapper/deb1--vg-root: UUID="ac1e1092-e501-49bc-b839-67006ef89234" BLOCK_SIZE="4096" TYPE="ext4"
+/dev/sda5: UUID="9xmigV-MtN3-tC0m-FjuC-He9P-MEGg-Fr4KLd" TYPE="LVM2_member" PARTUUID="928bac7e-05"
+/dev/sda1: UUID="49a1c3fa-1bd5-489d-82d9-b2c6ce6f45e2" BLOCK_SIZE="1024" TYPE="ext2" PARTUUID="928bac7e-01"
+
+sudo apt install grub-customizer
+
+# EXAMPLE 1 - ADDING WINDOWS TO GRUB  ENTRY
+Name: Windows 10 Pro Boot Manager (on /dev/sdb1)
+Type: Other
+
+insmod part_msdos
+insmod ntfs
+set root='hd0,msdos1'
+if [ x$feature_platform_search_hint = xy ]; then
+  search --no-floppy --fs-uuid --set=root --hint-bios=hd0,msdos1 --hint-efi=hd0,msdos1 --hint-baremetal=ahci0,msdos1  76D4AFBCD4AF7CCD
+else
+  search --no-floppy --fs-uuid --set=root 76D4AFBCD4AF7CCD
+fi
+parttool ${root} hidden-
+drivemap -s (hd0) ${root}
+chainloader +1
+
+# EXAMPLE 2
+Name: Windows 10 Pro Boot Manager (on /dev/nvme0n1p1)
+Type: Other
+
+insmod part_gpt
+insmod fat
+search --no-floppy --fs-uuid --set=root BAE6-96B7
+chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+
+# EXAMPLE 3
+Name: Windows 10 Pro Boot Manager (on /dev/nvme0n1p1)
+Type: Other
+
+insmod part_gpt
+insmod fat
+search --no-floppy --fs-uuid --set=root EFC8-2865
+chainloader /EFI/Microsoft/Boot/bootmgfw.efi

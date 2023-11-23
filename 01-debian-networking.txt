@@ -1,0 +1,49 @@
+sudo vi /etc/network/interfaces
+source /etc/network/interfaces.d/*
+auto lo
+iface lo inet loopback
+allow-hotplug enp1s0
+
+sudo vi /etc/network/interfaces.d/enp1s0
+iface enp1s0 inet static
+        address 192.168.1.127
+        netmask 255.255.255.0
+        gateway 192.168.1.131
+        dns-domain intensewebs.com
+        dns-nameservers 192.168.1.140 192.168.1.141
+
+sudo vi /etc/resolv.conf
+domain yourdomainname.com
+search yourdomainname.com
+nameserver 9.9.9.9
+nameserver 149.112.112.112
+
+sudo vi /etc/hosts
+# ADD/CHANGE
+192.168.1.103 ctp1.intensewebs.com ctp1
+
+sudo vi /etc/hostname
+# ADD/CHANGE
+ctp1.intensewebs.com
+
+sudo systemctl restart networking
+___________________________________________________________________________
+ip link list
+ip link show
+sudo nmcli device status
+sudo nmcli connection modify Example-Connection ipv4.addresses 192.168.1.124/24
+sudo nmcli connection modify Example-Connection ipv6.addresses 2001:db8:1::1/64
+sudo nmcli connection modify Example-Connection ipv4.method manual
+sudo nmcli connection modify Example-Connection ipv6.method manual
+sudo nmcli connection modify Example-Connection ipv4.gateway 192.168.1.131
+sudo nmcli connection modify Example-Connection ipv6.gateway 2001:db8:1::fffe
+sudo nmcli connection modify Example-Connection ipv4.dns "192.168.1.140"
+sudo nmcli connection modify Example-Connection ipv6.dns "2001:db8:1::ffbb"
+sudo nmcli connection modify Example-Connection ipv4.dns-search example.com
+sudo nmcli connection modify Example-Connection ipv6.dns-search example.com
+sudo nmcli connection up Example-Connection
+sudo nmcli device status
+
+# MANUAL IPV6
+nmcli con mod enp1s0 ipv6.addresses "2a22:1d0:5222:4::22f2/64" gw6 "2a22:1d0:5222:4::22f0/64"
+nmcli con mod enp1s0 ipv6.method manual

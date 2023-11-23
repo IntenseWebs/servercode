@@ -1,0 +1,22 @@
+sudo virsh list
+sudo virsh shutdown ubuntu-box1
+sudo virsh suspend ubuntu-box1
+
+sudo virsh domrename debian11 ns1
+sudo vi /etc/libvirt/qemu/ns1.xml
+
+sudo virsh dumpxml ns1 > temp.txt
+vi temp.txt
+
+sudo vi /etc/libvirt/qemu/ns1.xml
+
+sudo virt-clone --original ubuntu-box1 --auto-clone
+
+sudo virt-clone --original debian11 --name ns1 --file /var/lib/libvirt/images/ns1.qcow2
+
+
+sudo virt-clone 
+--connect=qemu:///system 
+--original asterisk-cloud 
+--name kamailio-cloud 
+--file /var/lib/libvirt/images/kamailio-cloud.qcow2

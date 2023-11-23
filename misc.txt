@@ -1,0 +1,60 @@
+dnf grouplist -v
+dnf groupinstall "Fedora Workstation"
+dnf groupinstall "Cinnamon Desktop"
+systemctl set-default graphical.target
+# With some desktop you may also need:
+systemctl enable gdm.service
+sudo dnf install switchdesk switchdesk-gui
+
+sudo vi /etc/gdm3/daemon.conf
+[security]
+AllowRoot=True
+sudo vi /etc/pam.d/gdm-password
+# COMMENT OUT: # auth    required        pam_succeed_if.so user != root quiet_success
+
+sudo apt remove gnome-keyring
+sudo apt autoclean && sudo apt autoremove
+
+sudo apt install gvfs-backends
+sudo apt reinstall gvfs-backends
+
+sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+
+tar zcvf email-backup.tar.gz /home/privacy/.thunderbird/
+
+systemctl status display-manager.service
+sudo dpkg-reconfigure gdm3
+
+gunzip linux-brprinter-installer-2.2.3-1.gz
+cd linux-brprinter-installer-2.2.3-1
+chmod +x linux*
+sudo ./linux-brprinter-installer-2.2.3-1
+
+sudo dpkg --configure -a
+sudo cp -a /boot
+sudo cp -a /boot .
+sudo update-initramfs -ut -b .
+sudo dpkg --purge raspi-firmware
+sudo dpkg --configure -a
+sudo apt remove initramfs-tools
+sudo apt install itramfs-tools
+sudo apt install initramfs-tools
+sudo dpkg --configure -a
+shutdown -r now
+
+sudo apt-get install pavucontrol
+sudo apt-get install pulseaudio-equalizer
+sudo apt-get install alsamixer
+sudo alsactl init
+pacmd list-cards
+sudo pacmd list-cards
+sudo apt-get install alsa-tools-gui
+
+source /etc/profile.d/bash_completion.sh
+
+cat >> ~/.inputrc <<'EOF'
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+EOF
+
+bind -f  ~/.inputrc

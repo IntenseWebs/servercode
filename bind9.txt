@@ -1,0 +1,223 @@
+# Bind 9 DNS
+https://wpcademy.com/how-to-install-bind9-dns-server-on-ubuntu-step-by-step/
+https://www.linuxtechi.com/install-configure-bind-9-dns-server-ubuntu-debian/
+https://www.isc.org/bind/
+https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-debian-9
+# DMZ STEALTH SERVER, SPLIT-HORIZON, SPLIT-BRAIN DNS
+https://www.cyberciti.biz/faq/linux-unix-bind9-named-configure-views/
+https://www.zytrax.com/books/dns/ch4/#split
+
+# Misc re-used commands
+sudo systemctl status named
+sudo systemctl restart bind9
+sudo systemctl status bind9
+suso systemctl restart bind9.service
+sudo service bind9 restart
+sudo named-checkconf
+sudo named-checkzone intensewebs.com /var/lib/bind/db.intensewebs.com
+sudo tail -f /var/log/syslog
+
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y bind9 bind9utils bind9-doc dnsutils
+cd /etc/bind
+
+# Copy/Backup your files
+sudo cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup
+sudo vi /etc/bind/named.conf.options
+ 
+acl trustedclients {
+        localhost;
+        localnets;
+	192.168.1.140   #ns1.intensewebs.com
+	192.168.1.141   #ns2.intensewebs.com
+	192.168.1.142   #ns3.intensewebs.com
+	192.168.1.143   #ns4.intensewebs.com
+        192.168.1.0/24;
+        192.168.2.0/24;
+};
+
+options {
+        directory "/var/cache/bind";
+
+        recursion yes;
+        allow-query { trustedclients; };
+        allow-query-cache { trustedclients; };
+        allow-recursion { trustedclients; };
+
+        forwarders {
+                9.9.9.9;
+                149.112.112.112;
+        };
+
+        dnssec-validation no;
+
+        listen-on-v6 { any; };
+};
+
+# NOTE: DNSSec disabled as it was found to cause issues for Ubuntu 20.04
+
+4) Define zone files backup the existing file named.conf.local e.g.
+
+sudo cp named.conf.local named.conf.local.bak
+# edit named.conf.local e.g.
+ sudo nano named.conf.local
+ so it looks something like this
+  
+zone "intensewebs.com" {
+        type master;
+        file "/var/lib/bind/db.intensewebs.com";
+        allow-transfer { 192.168.1.141; };
+        also-notify { 192.168.1.141; };
+};
+
+zone "nukvm.org" {
+        type master;
+        file "/var/lib/bind/db.nukvm.org";
+        allow-transfer { 192.168.1.141; };
+        also-notify { 192.168.1.141; };
+};
+
+zone "1.168.192.in-addr.arpa" {
+        type master;
+        file "/var/lib/bind/db.1.168.192";
+        allow-transfer { 192.168.1.141; };
+        also-notify { 192.168.1.141; };
+};
+
+ check the file for errors
+ sudo named-checkconf
+ 
+5) Create a forward lookup zone in /var/lib/bind. Copy an existing file to one with the name used before e.g.
+sudo cp db.local db.templab.lan
+sudo nano db.templab.lan
+
+; BIND data file for intensewebs.com zone
+;
+$TTL    604800
+@       IN      SOA     ns1.intensewebs.com. dns.intensewebs.com. (
+                              3         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      ns1.intensewebs.com.
+
+ns1		IN      A       192.168.1.140
+git		IN      A       192.168.1.123
+alma1		IN      A       192.168.1.121
+superdog	IN	A	192.168.1.200
+
+# check the file syntax
+sudo named-checkzone intensewebs.com db.intensewebs.com
+ 
+6) Create a reverse lookup zone
+using same name specified in named-
+  edit the file e.g.
+  sudo nano db.172.16.17
+  so that it looks something like this
+  
+;
+; BIND data file for intensewebs.com zone
+;
+
+$TTL    604800
+@       IN      SOA     ns1.intensewebs.com. dns.intensewebs.com. (
+                              6         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      ns1.intensewebs.com.
+@       IN      NS      ns2.intensewebs.com.
+@       IN      A       192.168.1.140
+@       IN      A       192.168.1.141
+
+ns1             IN      A       192.168.1.140
+ns2             IN      A       192.168.1.141
+git             IN      A       192.168.1.123
+qalma1          IN      A       192.168.1.121
+superdog        IN      A       192.168.1.222
+                IN      MX 10 mail.intensewebs.com.
+mail            IN      A       74.63.233.135
+
+ check the file syntax
+ sudo named-checkzone 1.168.192.in-addr.arpa db.1.168.192
+ 
+7) Edit the server's DNS entry to use it's own DNS server
+
+vi /etc/resolv.conf
+domain intensewebs.com
+search intensewebs.com
+nameserver 192.168.1.140
+nameserver 192.168.1.141 gd
+
+
+8) Start and test DNS
+sudo systemctl start named
+sudo systemctl enable named
+
+sudo systemctl start bind9
+
+ sudo systemctl status bind9
+ sudo systemctl status named
+ 
+ test DNS is working e.g.
+ host git.intensewebs.com
+ host 192.168.1.122
+ ping www.amazon.com
+
+---------------------------------------
+
+SECONDARY
+sudo nano named.conf.local
+
+zone "intensewebs.com" {
+        type slave;
+        file "/var/lib/bind/db.intensewebs.com";
+	masters { 192.168.1.140; };
+};
+
+zone "1.168.192.in-addr.arpa" {
+        type slave;
+        file "/var/lib/bind/db.1.168.192";
+	masters { 192.168.1.140; };
+};
+
+sudo systemctl restart bind9
+sudo systemctl status bind9
+
+sudo vi /etc/bind/named.conf.options
+ 
+acl trustedclients {
+        localhost;
+        localnets;
+	192.168.1.140   #ns1.intensewebs.com
+	192.168.1.141   #ns2.intensewebs.com
+	192.168.1.142   #ns3.intensewebs.com
+	192.168.1.143   #ns4.intensewebs.com
+        192.168.1.0/24;
+        192.168.2.0/24;
+};
+
+options {
+        directory "/var/cache/bind";
+
+        recursion yes;
+        allow-query { trustedclients; };
+        allow-query-cache { trustedclients; };
+        allow-recursion { trustedclients; };
+
+        forwarders {
+                9.9.9.9;
+                149.112.112.112;
+        };
+
+        dnssec-validation no;
+
+        listen-on-v6 { any; };
+};
+
+
+

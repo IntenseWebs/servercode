@@ -1,0 +1,64 @@
+#FEDORA - ADD GRAPHICAL FOR VNC XRDP HEADLESS SERVER
+sudo dnf group install "Server with GUI"
+sudo systemctl set-default graphical.target
+sudo systemctl reboot
+sudo dnf install -y xrdp tigervnc-server
+# sudo apt install xrdp tigervnc-standalone-server
+su - yourusername
+vncpasswd
+sudo systemctl start xrdp
+sudo systemctl enable xrdp
+sudo firewall-cmd --zone=public --add-port=3389/tcp --permanent
+sudo firewall-cmd --zone=public --add-port 5901/tcp --permanent
+sudo firewall-cmd --zone=public --add-service=vnc-server --permanent
+sudo firewall-cmd --zone=public --add-source=192.168.1.0/24 --permanent
+sudo firewall-cmd --reload
+
+#DEBIAN - ADD GRAPHICAL FOR VNC XRDP HEADLESS SERVER
+sudo apt install tasksel -y
+sudo systemctl set-default graphical.target
+sudo systemctl reboot
+sudo apt install xrdp tigervnc-standalone-server tigervnc-common tightvncserver
+su - yourusername
+vncpasswd
+sudo systemctl start xrdp
+sudo systemctl enable xrdp
+sudo ufw allow from 192.168.0.1/24 to any port 3389
+sudo ufw reload
+
+# ADD USERS
+sudo vi /etc/tigervnc/vncserver.users
+:1=iw
+:2=root
+
+# SET VNC XRPD PASSWORD FOR EACH USER
+vncpasswd
+
+#VNC DEFAULT WINDOWS SETTINGS
+vi /etc/tigervnc/vncserver-config-defaults
+session=gnome
+geometry=1920x1080
+nolisten=tcp
+localhost
+
+-------------------------------------
+restorecon -RFv ~/.vnc
+[root]# rm /etc/systemd/system/vncserver@.service
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now vncserver@:1.service
+sudo systemctl enable --now vncserver@:2.service
+sudo systemctl status vncserver@:1.service
+sudo systemctl status vncserver@:2.service
+
+# VNC OVER SSH - EXIT BACK TO CLIENT MACHINE
+ssh -L 5901:localhost:5901 iw@192.168.1.121
+vncviewer -via iw@192.168.1.121 localhost:1
+
+# NVIDIA - If the server uses the proprietary Nvidia driver, disable Wayland:
+# Uncomment the WaylandEnable=False line in the /etc/gdm/custom.conf configuration file.
+# Add the DefaultSession=gnome-xorg.desktop option to the [daemon] section of the configuration file.
+# Reboot the server.
+
+# sudo chcon --type=bin_t /usr/sbin/xrdp
+# sudo chcon --type=bin_t /usr/sbin/xrdp-sesman

@@ -1,0 +1,50 @@
+# Install PostgreSQL Linux
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+createuser --interactive
+sudo -u postgres psql
+\password
+sudo -u postgres createdb sammy
+
+sudo su - postgres -c "createuser giti"
+ALTER ROLE giti WITH PASSWORD '*************';
+CREATE DATABASE giteaiw WITH OWNER giti TEMPLATE template0 ENCODING UTF8 LC_COLLATE 'en_US.UTF-8' LC_CTYPE 'en_US.UTF-8';
+GRANT ALL PRIVILEGES ON DATABASE giteaiw TO giti;
+
+su - postgres
+psql
+
+sudo vi /etc/postgresql/15/main/postgresql.conf
+sudo vi /etc/postgresql/15/main/pg_hba.conf
+psql "postgres://gitea@192.168.1.126/giteadb"
+psql "postgres://giti@192.168.1.126/gitea"
+
+sudo su - postgres -c "createuser <username>"
+sudo su - postgres -c "createdb <dbname>"
+sudo -u postgres psql
+su -c "psql" - postgres
+ALTER ROLE super WITH PASSWORD '************';
+GRANT ALL PRIVILEGES ON DATABASE <usernamedb> TO <name>;
+
+sudo -i -u postgres
+psql
+postgres=# \q
+curl -O https://sp.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip
+unzip dvdrental.zip
+psql
+postgres=# create database dvdrental;
+postgres=# \q
+pg_restore --dbname=dvdrental --verbose dvdrental.tar
+psql
+postgres=# \c dvdrental
+dvdrental=#
+dvdrental=# select count(*) from film;
+
+
+sudo systemctl stop postgresql
+sudo systemctl start postgresql
+sudo systemctl restart postgresql
+sudo systemctl reload postgresql
+systemctl status postgresql
+
+
