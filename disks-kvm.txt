@@ -1,0 +1,10 @@
+# RESIZE - DONE AS ROOT
+virsh domblklist giti.iweb.city
+virsh snapshot-list giti.iweb.city
+virsh snapshot-delete giti.iweb.city 13-09-2022
+sudo qemu-img resize /var/lib/libvirt/images/giti.iweb.city.qcow2 +20G
+#Boot into your VM & if not using LVM, then resize disk by finding disk first:
+df -hT
+resize2fs /dev/sda
+
+# USE disks.txt for extending LVM volumes and ext4 partitions

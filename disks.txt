@@ -20,7 +20,8 @@ resize2fs /dev/mapper/zeus--vg-home 50G
 lvreduce -L50G /dev/mapper/zeus--vg-home
 # remount /home
 mount /home
-# extend the logical volume zeus-vg/var by 20G
+
+# Extend the logical volume zeus-vg/var by 20G
 lvextend -L+20G /dev/mapper/zeus--vg-var
 # resize the ext4 filesystem in logical volume zeus-vg/var to the new volume size
 resize2fs /dev/mapper/zeus--vg-var

@@ -3,16 +3,18 @@ sudo apt install git-all
 git config --global user.name "IntenseWebs"
 git config --global user.email git@intensewebs.com
 
-git init --initial-branch=main servercode
 # ONLY ADD FIRST TIME ONLY (BELOW)
-git remote add origin git@github.com:IntenseWebs/servercode.git
+git init --initial-branch=main servercode
+# git remote add origin git@github.com:IntenseWebs/servercode.git
+# git remote rm origin
+git remote add origin gitea@giti.iweb.city:/var/lib/gitea/data/gitea-repositories/iw/cardano-public.git
+
 git add *
 git add kvm.txt
 git commit * -m "Initial Commit"
 git commit -a
 git status
-git config --list
-git log
+
 
 # CLONE ON BRANCH
 git clone ssh://git@192.168.1.123/~/Repos/servercode servercode
@@ -28,7 +30,7 @@ git add *
 git commit -a
 git commit * -m "Updating . . ."
 git remote -v
-git push origin master:refs/heads/upload
+# git push origin master:refs/heads/upload
 git push origin main:refs/heads/upload
 
 
@@ -52,6 +54,9 @@ git branch -a
 # GIT CHANGES FROM GETHUB - ***DANGEROUS***
 git pull --rebase git@github.com:IntenseWebs/servercode.git
 git push
+
+git config --list
+git log
 
 #GIT CLONE TO ONE FILE FOR BACKUP
 #! /bin/bash
