@@ -56,11 +56,10 @@ options {
 
 # NOTE: DNSSec disabled as it was found to cause issues for Ubuntu 20.04
 
-4) Define zone files backup the existing file named.conf.local e.g.
+# 4) Define zone files backup the existing file named.conf.local e.g.
 
-sudo cp named.conf.local named.conf.local.bak
-# edit named.conf.local e.g.
- sudo nano named.conf.local
+sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.bak
+ sudo vi named.conf.local
  so it looks something like this
   
 zone "intensewebs.com" {
@@ -77,73 +76,98 @@ zone "nukvm.org" {
         also-notify { 192.168.1.141; };
 };
 
+zone "iweb.city" {
+        type master;
+        file "/var/lib/bind/db.iweb.city";
+        allow-transfer { 192.168.1.141; };
+        also-notify { 192.168.1.141; };
+};
+
 zone "1.168.192.in-addr.arpa" {
         type master;
         file "/var/lib/bind/db.1.168.192";
         allow-transfer { 192.168.1.141; };
         also-notify { 192.168.1.141; };
 };
-
  check the file for errors
  sudo named-checkconf
  
 5) Create a forward lookup zone in /var/lib/bind. Copy an existing file to one with the name used before e.g.
-sudo cp db.local db.templab.lan
-sudo nano db.templab.lan
+sudo cp /etc/bind/db.local /var/lib/bind/db.intensewebs.com
+sudo vi db.intensewebs.com
 
-; BIND data file for intensewebs.com zone
-;
+$ORIGIN intensewebs.com.
 $TTL    604800
+;
 @       IN      SOA     ns1.intensewebs.com. dns.intensewebs.com. (
-                              3         ; Serial
+                             58         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
                          604800 )       ; Negative Cache TTL
 ;
-@       IN      NS      ns1.intensewebs.com.
-
-ns1		IN      A       192.168.1.140
-git		IN      A       192.168.1.123
-alma1		IN      A       192.168.1.121
-superdog	IN	A	192.168.1.200
+                IN      NS      ns1.intensewebs.com.
+                IN      NS      ns2.intensewebs.com.
+;
+                IN      MX      10      mail.intensewebs.com.
+;
+alma1   IN      A       192.168.1.121
+git     IN      A       192.168.1.123
+ipa1    IN      A       192.168.1.124
+ipa2    IN      A       192.168.1.125
+pg      IN      A       192.168.1.126
+;
+ns1     IN      A       192.168.1.140
+ns2     IN      A       192.168.1.141
+tdebian IN      A       192.168.1.200
+sd      IN      A       192.168.1.222
+superdog        IN      A       192.168.1.223
+;
+ftp     IN      A       74.63.233.135
+mail    IN      A       74.63.233.135
+webmail IN      A       74.63.233.135
+www     IN      A       74.63.233.135
+;
+t       IN      A       129.146.170.34
+lab     IN      A       129.146.170.34
+;
+u       IN      A       129.153.118.150
 
 # check the file syntax
 sudo named-checkzone intensewebs.com db.intensewebs.com
  
 6) Create a reverse lookup zone
-using same name specified in named-
-  edit the file e.g.
-  sudo nano db.172.16.17
-  so that it looks something like this
-  
-;
-; BIND data file for intensewebs.com zone
-;
+using same name specified in named-  edit the file e.g.
+sudo vi db.1.168.192
 
 $TTL    604800
 @       IN      SOA     ns1.intensewebs.com. dns.intensewebs.com. (
-                              6         ; Serial
+                             58         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
                          604800 )       ; Negative Cache TTL
-;
-@       IN      NS      ns1.intensewebs.com.
-@       IN      NS      ns2.intensewebs.com.
-@       IN      A       192.168.1.140
-@       IN      A       192.168.1.141
+        IN      NS      ns1.intensewebs.com.
+        IN      NS      ns2.intensewebs.com.
 
-ns1             IN      A       192.168.1.140
-ns2             IN      A       192.168.1.141
-git             IN      A       192.168.1.123
-qalma1          IN      A       192.168.1.121
-superdog        IN      A       192.168.1.222
-                IN      MX 10 mail.intensewebs.com.
-mail            IN      A       74.63.233.135
+ns1.intensewebs.com.    IN      A       192.168.1.140
+ns2.intensewebs.com.    IN      A       192.168.1.141
+3       IN      PTR     giti.iweb.city
+4       IN      PTR     ng1.iweb.city
+66      IN      PTR     gitea.nukvm.org
+121     IN      PTR     alma1.intensewebs.com
+123     IN      PTR     git.intensewebs.com
+124     IN      PTR     ipa1.intensewebs.com
+125     IN      PTR     ipa2.intensewebs.com
+126     IN      PTR     pg.intensewebs.com
+140     IN      PTR     ns1.intensewebs.com
+141     IN      PTR     ns2.intensewebs.com
+200     IN      PTR     tdebian.intensewebs.com
+201     IN      PTR     tnginx.iweb.city
+222     IN      PTR     sd.intensewebs.com
+223     IN      PTR     superdog.intensewebs.com
 
- check the file syntax
- sudo named-checkzone 1.168.192.in-addr.arpa db.1.168.192
+sudo named-checkzone 1.168.192.in-addr.arpa db.1.168.192
  
 7) Edit the server's DNS entry to use it's own DNS server
 
@@ -151,7 +175,7 @@ vi /etc/resolv.conf
 domain intensewebs.com
 search intensewebs.com
 nameserver 192.168.1.140
-nameserver 192.168.1.141 gd
+nameserver 192.168.1.141
 
 
 8) Start and test DNS
@@ -171,12 +195,24 @@ sudo systemctl start bind9
 ---------------------------------------
 
 SECONDARY
-sudo nano named.conf.local
+sudo vi /etc/bind/named.conf.local
 
 zone "intensewebs.com" {
         type slave;
         file "/var/lib/bind/db.intensewebs.com";
 	masters { 192.168.1.140; };
+};
+
+zone "nukvm.org" {
+        type slave;
+        file "/var/lib/bind/db.nukvm.org";
+        masters { 192.168.1.140; };
+};
+
+zone "iweb.city" {
+        type slave;
+        file "/var/lib/bind/db.iweb.city";
+        masters { 192.168.1.140; };
 };
 
 zone "1.168.192.in-addr.arpa" {
