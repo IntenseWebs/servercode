@@ -37,7 +37,7 @@ vi /etc/ssh/sshd_config
 PasswordAuthentication no
 PermitRootLogin no
 
-systemctl restart ssh
+systemctl restart sshd
 
 # TO REMOVE OLD KEYS FROM known_hosts file
 ssh-keygen -f "/home/privacy/.ssh/known_hosts" -R "192.168.1.200"
