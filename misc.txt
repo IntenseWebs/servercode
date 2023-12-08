@@ -1,3 +1,5 @@
+* 2 * * * sysbench --time=14400 cpu run
+
 dnf grouplist -v
 dnf groupinstall "Fedora Workstation"
 dnf groupinstall "Cinnamon Desktop"

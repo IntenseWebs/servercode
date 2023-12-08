@@ -1,15 +1,27 @@
-nmcli connection show
 sudo dnf update && sudo dnf upgrade
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index
-# Shell 'nmtui' is recommended method if if installing BRIDGE with slave network apapter using static IP address. Below method is manual edit of config files.
+
+# Shell 'nmtui' is recommended method for network apapter using static IP address. Further below method is manual edit of config files.
+https://systemzone.net/centos-7-network-configuration-using-nmtui-tool/
+yum install NetworkManager-tui
 
 sudo hostnamectl set-hostname new.name
+sudo nmcli connection show
+sudo nmcli con modify 'enp1s0' ifname enp1s0 ipv4.method manual ipv4.addresses 192.168.1.124/24 ipv4.gateway 192.168.1.131 ipv4.dns 192.168.1.140 ipv4.dns-search intensewebs.com
+sudo nmcli con down 'enp1s0'
+sudo nmcli con up 'enp1s0'
+
+sudo systemctl restart networking
+
+ip address show enp1s0
+ip route show default
+cat /etc/resolv.conf
 
 sudo vi /etc/resolv.conf
-domain yourdomainname.com
-search yourdomainname.com
-nameserver 9.9.9.9
-nameserver 149.112.112.112
+domain intensewebs.com
+search intensewebs.com
+nameserver 192.168.1.140
+nameserver 192.168.1.141
 
 sudo vi /etc/hosts
 # ADD/CHANGE
@@ -22,6 +34,7 @@ ctp1.intensewebs.com
 ip link list
 ip link show
 sudo nmcli device status
+sudo nmcli con modify 'Wired connection 1' ifname enp0s3 ipv4.method manual ipv4.addresses 192.168.1.149/24 gw4 192.168.1.1
 sudo nmcli connection modify Example-Connection ipv4.addresses 192.168.1.124/24
 sudo nmcli connection modify Example-Connection ipv6.addresses 2001:db8:1::1/64
 sudo nmcli connection modify Example-Connection ipv4.method manual
@@ -34,5 +47,3 @@ sudo nmcli connection modify Example-Connection ipv4.dns-search example.com
 sudo nmcli connection modify Example-Connection ipv6.dns-search example.com
 sudo nmcli connection up Example-Connection
 sudo nmcli device status
-
-sudo systemctl restart networking
