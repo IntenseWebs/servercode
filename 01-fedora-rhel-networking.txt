@@ -1,18 +1,18 @@
-sudo dnf update && sudo dnf upgrade
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index
+# Terminal 'nmtui' is recommended method for network adapter using static IP address. Further below method is manual edit of config files.
+yum install Netwosudo hostnamectl set-hostname new.name
 
-# Shell 'nmtui' is recommended method for network apapter using static IP address. Further below method is manual edit of config files.
-https://systemzone.net/centos-7-network-configuration-using-nmtui-tool/
-yum install NetworkManager-tui
-
-sudo hostnamectl set-hostname new.name
+NetworkManager --print-config | grep migrate-ifcfg-rh
+nmcli -f name,uuid,filename connection
 sudo nmcli connection show
-sudo nmcli con modify 'enp1s0' ifname enp1s0 ipv4.method manual ipv4.addresses 192.168.1.124/24 ipv4.gateway 192.168.1.131 ipv4.dns 192.168.1.140 ipv4.dns-search intensewebs.com
+sudo hostnamectl set-hostname ipa2.corp.intensewebs.com
+sudo nmcli con modify 'enp1s0' ifname enp1s0 ipv4.method manual ipv4.addresses 192.168.1.125/24 ipv4.gateway 192.168.1.131 ipv4.dns 192.168.1.140 ipv4.dns-search corp.intensewebs.com
+#DO NOT DOWN THE NETWORK CONNECTION IF YOU ARE LOGGED IN REMOTE BY SSH OR YOU WILL LOSE THE CONNECTION. It might be better to Reboot?
 sudo nmcli con down 'enp1s0'
 sudo nmcli con up 'enp1s0'
-
+resolvectl status
 sudo systemctl restart networking
-
+sudo systemctl restart NetworkManager
 ip address show enp1s0
 ip route show default
 cat /etc/resolv.conf

@@ -1,4 +1,6 @@
 * 2 * * * sysbench --time=14400 cpu run
+# OPEN SOURCE BENCHMARKS
+speccpu, netperf, memtier_benchmark, aerospike, hpcc
 
 dnf grouplist -v
 dnf groupinstall "Fedora Workstation"
