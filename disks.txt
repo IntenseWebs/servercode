@@ -3,8 +3,11 @@ lsblk
 lsblk -fe7
 blkid
 parted -l
+parted /dev/sde u s p
 df -hT
 du -sh /home
+# Check FREE SPACE
+sfdisk --list-free /dev/vda
 hwinfo --short --block
 pvs
 vgs
