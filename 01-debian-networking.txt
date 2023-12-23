@@ -29,7 +29,7 @@ ctp1.intensewebs.com
 sudo systemctl restart networking
 ___________________________________________________________________________
 # OPTIONAL NOT NEEDED METHODS
-
+# IF DESIRING TO USE Netork Manager: sudo apt install network-manager
 ip link list
 ip link show
 sudo nmcli device status
