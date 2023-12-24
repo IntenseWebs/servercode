@@ -1,7 +1,9 @@
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index
 # Terminal 'nmtui' is recommended method for network adapter using static IP address. Further below method is manual edit of config files.
-yum install Netwosudo hostnamectl set-hostname new.name
 
+sudo dnf install NetworkManager
+sudo hostnamectl set-hostname new.name
+ip link show
 NetworkManager --print-config | grep migrate-ifcfg-rh
 nmcli -f name,uuid,filename connection
 sudo nmcli connection show
@@ -11,6 +13,7 @@ sudo nmcli con modify 'enp1s0' ifname enp1s0 ipv4.method manual ipv4.addresses 1
 sudo nmcli con down 'enp1s0'
 sudo nmcli con up 'enp1s0'
 resolvectl status
+systemd-resolve --status enp1s0
 sudo systemctl restart networking
 sudo systemctl restart NetworkManager
 ip address show enp1s0

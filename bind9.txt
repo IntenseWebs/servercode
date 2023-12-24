@@ -8,6 +8,8 @@ https://www.cyberciti.biz/faq/linux-unix-bind9-named-configure-views/
 https://www.zytrax.com/books/dns/ch4/#split
 
 # Misc re-used commands
+named -v
+dig -t txt -c chaos VERSION.BIND @192.168.1.140
 sudo systemctl status named
 sudo systemctl restart bind9
 sudo systemctl status bind9
