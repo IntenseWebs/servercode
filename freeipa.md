@@ -6,19 +6,57 @@ firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --permanent
 dnf install freeipa-server freeipa-server-dns nfs-utils
 ipa-server-install --mkhomedir
 
-User1 well, i don't know why freeipa thinks you have to use their bind, but all things being equal, i probably wouldn't
-Question: I don't have to; it's recommended so I don't have to update zones all the time; to let freeipa do it.
-User1 what do you mean update zones all the time?
-Question: there are kerberos DNS records to be updated? I'm not sure yet how often they'll get updated?
-User1 oh
-Question: at least I have the luxury this time to bang my head through it (and backups of all the servers) lol
-User1 you're just saying that freeipa does [however often] require modifications to dns data?  and you want freeipa to be able to do that directly,  rather than you going and getting the info and making the changes yourself on freeipa's behalf?
-Question: yes
-User1 i see
-User1 surely freeipa support ddns, yes?
-Question: yes
-User1 then, all things being equal, there should be no issue with using your existing bind servers
-Question: that's what I was thinking; the more I use bind, the more respect I have for it.
+Setup complete
+
+Next steps:
+        1. You must make sure these network ports are open:
+                TCP Ports:
+                  * 80, 443: HTTP/HTTPS
+                  * 389, 636: LDAP/LDAPS
+                  * 88, 464: kerberos
+                  * 53: bind
+                UDP Ports:
+                  * 88, 464: kerberos
+                  * 53: bind
+                  * 123: ntp
+
+        2. You can now obtain a kerberos ticket using the command: 'kinit admin'
+           This ticket will allow you to use the IPA tools (e.g., ipa user-add)
+           and the web user interface.
+
+Be sure to back up the CA certificates stored in /root/cacert.p12
+These files are required to create replicas. The password for these
+files is the Directory Manager password
+The ipa-server-install command was successful
+
+#REBOOT
+
+kinit admin
+klist
+
+# Setup for client:
+sudo yum -y install freeipa-client ipa-admintools
+firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps
+firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --permanent
+ipa-client-install --mkhomedir --force-ntpd
+ipa sudorule-add --cmdcat=all All
+
+# To check sudo rules:
+ipa sudorule-find All
+
+ipa sudorule-add ANY \
+    --hostcat=all \
+    --cmdcat=all \
+    --runasusercat=all \
+    --runasgroupcat=all
+
+ipa sudorule-add-user ANY \
+    --users=user --groups=group
+
+ipa sudorule-add-option ANY \
+    --sudooption='!authenticate'
+
+
 User2 rob0: I *think* freeipa has a named DLZ module that pulls records straight from LDAP
 User2 not 100% sure (I know Samba does exactly that for AD-hosted zones, however)
 User3 Does it work with IXFR queries, do you know? And I suppose UPDATE queries make the change in the LDAP backend?

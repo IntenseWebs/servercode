@@ -2,11 +2,13 @@ https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-si
 # Terminal 'nmtui' is recommended method for network adapter using static IP address. Further below method is manual edit of config files.
 
 sudo dnf install NetworkManager
-sudo hostnamectl set-hostname new.name
 ip link show
+nmcli connection show
 NetworkManager --print-config | grep migrate-ifcfg-rh
 nmcli -f name,uuid,filename connection
-sudo nmcli connection show
+cat /etc/NetworkManager/system-connections/enp1s0.nmconnection
+
+sudo hostnamectl set-hostname new.name
 sudo hostnamectl set-hostname ipa2.corp.intensewebs.com
 sudo nmcli con modify 'enp1s0' ifname enp1s0 ipv4.method manual ipv4.addresses 192.168.1.125/24 ipv4.gateway 192.168.1.131 ipv4.dns 192.168.1.140 ipv4.dns-search corp.intensewebs.com
 #DO NOT DOWN THE NETWORK CONNECTION IF YOU ARE LOGGED IN REMOTE BY SSH OR YOU WILL LOSE THE CONNECTION. It might be better to Reboot?

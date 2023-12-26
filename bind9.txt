@@ -1,8 +1,15 @@
-# Bind 9 DNS
+# THIS CHEAT SHEET IS BASED ON DEBIAN
+# Bind 9 DNS - REDHAT / FEDORA use completely different folder structure than DEBIAN for bind:
+https://www.isc.org/bind/
+
+# DEBIAN # /etc/bind # /var/lib/bind
 https://wpcademy.com/how-to-install-bind9-dns-server-on-ubuntu-step-by-step/
 https://www.linuxtechi.com/install-configure-bind-9-dns-server-ubuntu-debian/
-https://www.isc.org/bind/
 https://www.digitalocean.com/community/tutorials/how-to-configure-bind-as-a-private-network-dns-server-on-debian-9
+
+# FEDORA # /etc/named.conf # /etc/named #/var/named
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/networking_guide/sec-bind
+
 # DMZ STEALTH SERVER, SPLIT-HORIZON, SPLIT-BRAIN DNS
 https://www.cyberciti.biz/faq/linux-unix-bind9-named-configure-views/
 https://www.zytrax.com/books/dns/ch4/#split
