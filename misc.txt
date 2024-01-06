@@ -53,7 +53,10 @@ sudo alsactl init
 pacmd list-cards
 sudo pacmd list-cards
 sudo apt-get install alsa-tools-gui
-
+---------------------------------------------
+sudo dnf install akmod-nvidia
+sudo dnf install xorg-x11-drv-nvidia-cuda
+---------------------------------------------
 source /etc/profile.d/bash_completion.sh
 
 cat >> ~/.inputrc <<'EOF'

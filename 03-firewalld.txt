@@ -32,3 +32,5 @@ firewall-cmd --zone=internal --add-source=192.168.1.0/24
 firewall-cmd --zone=public --remove-service=ssh
 firewall-cmd --zone=public --remove-service=dhcpv6-client
 firewall-cmd --runtime-to-permanent
+firewall-cmd --add-service=cockpit --permanent
+firewall-cmd --reload

@@ -101,3 +101,4 @@ Running  ssh-agent          OpenSSH Authentication Agent
 ssh-add -l
 ssh-add -L
 
+Could be multiple things; here are just a couple. 1. If you were using authorized_keys, were they copied to new user on Rocky? 2. Is sshd enabled on Rocky? systemctl status sshd 3. Firewall opened on Rocky? firewall-cmd --add-service=ssh --permanent 4. Permissions need reset on .ssh & authorized_keys; happens a lot more than you may realize. 5. Hopefully not root ssh login? Check /etc/ssh/sshd_config PasswordAuthentication PermitRootLogin Values

@@ -1,38 +1,45 @@
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/index
 https://youtu.be/xzfHRJNjqDI
 https://www.freeipa.org/page/Howto/ISC_DHCPd_and_Dynamic_DNS_update
 # FreeIPA requires over 2Gb+ in /usr - Change to root, Check DNS
 systemd-resolve --status enp1s0
+firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps
 firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --permanent
 dnf install freeipa-server freeipa-server-dns nfs-utils
 ipa-server-install --mkhomedir
 
-Setup complete
-
-Next steps:
+Setup complete: Next steps:
         1. You must make sure these network ports are open:
                 TCP Ports:
                   * 80, 443: HTTP/HTTPS
                   * 389, 636: LDAP/LDAPS
                   * 88, 464: kerberos
                   * 53: bind
+                  * 7389: Dogtag Certificate System - LDAP
                 UDP Ports:
                   * 88, 464: kerberos
                   * 53: bind
                   * 123: ntp
-
         2. You can now obtain a kerberos ticket using the command: 'kinit admin'
            This ticket will allow you to use the IPA tools (e.g., ipa user-add)
            and the web user interface.
-
 Be sure to back up the CA certificates stored in /root/cacert.p12
 These files are required to create replicas. The password for these
 files is the Directory Manager password
 The ipa-server-install command was successful
 
-#REBOOT
+reboot
+fips-mode-setup --enable
+reboot
+fips-mode-setup --check
+update-crypto-policies --show
 
 kinit admin
 klist
+
+# REPLICA - Server A can be installed with a CA and DNS services, while Replica A can be based on Server A's configuration but not host either DNS or CA services. Replica B can be added to the domain, also without CA or DNS services. At any time in the future, a CA or DNS service can be created and configured on Replica A or Replica B.
+
+__________________________________________________________
 
 # Setup for client:
 sudo yum -y install freeipa-client ipa-admintools
