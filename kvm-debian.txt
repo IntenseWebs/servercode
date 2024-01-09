@@ -6,6 +6,8 @@ grep -e 'svm' /proc/cpuinfo
 lscpu | grep Virtualization
 lsmod | grep kvm
 
+# sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y
+
 sudo apt install qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils libguestfs-tools genisoimage virtinst libosinfo-bin virt-viewer -y
 sudo apt install virt-manager -y
 sudo systemctl start libvirtd

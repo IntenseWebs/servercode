@@ -21,10 +21,12 @@ firewall-cmd --list-all
 
 dnf install freeipa-server freeipa-server-dns nfs-utils
 ipa-server-install --mkhomedir
-
+# ipactl status stop start restart
 reboot
+
 fips-mode-setup --enable
 reboot
+
 fips-mode-setup --check
 update-crypto-policies --show
 
@@ -36,10 +38,14 @@ __________________________________________________________
 
 # Setup for client:
 sudo yum -y install freeipa-client ipa-admintools
-firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps
 firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --permanent
 ipa-client-install --mkhomedir --force-ntpd
 ipa sudorule-add --cmdcat=all All
+ipa user-add bsmith
+ipa user-mod bsmith --title="Accounting II"
+ipa user-find smith
+kinit bsmith
+klist
 
 # To check sudo rules:
 ipa sudorule-find All
