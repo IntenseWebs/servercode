@@ -16,6 +16,7 @@ https://www.zytrax.com/books/dns/ch4/#split
 # Misc re-used commands
 named -v
 dig -t txt -c chaos VERSION.BIND @192.168.1.140
+rndc flush
 sudo systemctl status named
 sudo systemctl restart bind9
 sudo systemctl status bind9
@@ -66,7 +67,7 @@ options {
 
 # 4) Define zone files backup the existing file named.conf.local e.g.
 
-sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.bak
+sudo cp -f /etc/bind/named.conf.local /etc/bind/bak.named.conf.local.bak
  sudo vi named.conf.local
  so it looks something like this
   

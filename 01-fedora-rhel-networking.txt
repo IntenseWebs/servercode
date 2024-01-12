@@ -1,7 +1,7 @@
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index
 # Terminal 'nmtui' is recommended method for network adapter using static IP address. Further below method is manual edit of config files.
 
-sudo dnf install NetworkManager
+sudo dnf install NetworkManager NetworkManager-tui
 ip link show
 nmcli connection show
 NetworkManager --print-config | grep migrate-ifcfg-rh

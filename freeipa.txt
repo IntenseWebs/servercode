@@ -20,16 +20,16 @@ firewall-cmd --reload
 firewall-cmd --list-all
 
 dnf install freeipa-server freeipa-server-dns nfs-utils
-ipa-server-install --mkhomedir
-# ipactl status stop start restart
-reboot
-
 fips-mode-setup --enable
 reboot
 
 fips-mode-setup --check
 update-crypto-policies --show
 
+ipa-server-install --mkhomedir
+reboot
+
+# ipactl status stop start restart
 kinit admin
 klist
 
