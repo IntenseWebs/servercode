@@ -16,6 +16,7 @@ sudo systemctl enable --now libvirtd
 sudo usermod -a -G libvirt,kvm $USER
 sudo reboot
 
+**WARNING** Be on server as root. nmtui for graphical. RECOMMENDED using nmtui
 # create file if not created
 sudo vi /etc/sysctl.d/bridge.conf
 # add the following lines
@@ -28,7 +29,7 @@ sudo vi /etc/udev/rules.d/99-bridge.rules
 ACTION=="add", SUBSYSTEM=="module", KERNEL=="br_netfilter", RUN+="/sbin/sysctl -p /etc/sysctl.d/bridge.conf"
 # REBOOT SYSTEM
 
-**WARNING** Be on server as root. nmtui for graphical. RECOMMENDED using nmtui
+----------------------------------------------------------------------
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index#proc_configuring-a-network-bridge-by-using-nmtui_configuring-a-network-bridge
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index#configuring-a-network-bridge-by-using-nm-connection-editor_configuring-a-network-bridge
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index#proc_configuring-a-network-bridge-by-using-nmstatectl_configuring-a-network-bridge

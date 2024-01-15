@@ -25,9 +25,10 @@ sudo cp /var/lib/libvirt/images/ns2.qcow2 ~/Documents/
 
 # IMPORT
 cd /var/lib/libvirt/images/
-sudo virsh define –file ~/Documents/git.xml
-sudo virsh define –file ~/Documents/ns1.xml
-sudo virsh define –file ~/Documents/ns2.xml
+sudo virsh define -–file ~/Documents/tfedora.xml
+sudo virsh define -–file ~/Documents/ns1.xml
+sudo virsh define -–file ~/Documents/ns2.xml
+virsh define --file tfedora.intensewebs.com-39-6.6.9.xml
 sudo cp ~/Documents/git.qcow2 /var/lib/libvirt/images/
 sudo cp ~/Documents/ns1.qcow2 /var/lib/libvirt/images/
 sudo cp ~/Documents/ns2.qcow2 /var/lib/libvirt/images/

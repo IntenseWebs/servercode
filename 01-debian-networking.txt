@@ -6,17 +6,18 @@ allow-hotplug enp1s0
 
 sudo vi /etc/network/interfaces.d/enp1s0
 iface enp1s0 inet static
-        address 192.168.1.127
+        address 192.168.1.203
         netmask 255.255.255.0
         gateway 192.168.1.131
         dns-domain intensewebs.com
-        dns-nameservers 192.168.1.140 192.168.1.141
+        dns-nameservers 192.168.1.140 192.168.1.141 192.168.1.124
 
 sudo vi /etc/resolv.conf
-domain yourdomainname.com
-search yourdomainname.com
-nameserver 9.9.9.9
-nameserver 149.112.112.112
+domain intensewebs.com
+search intensewebs.com
+nameserver 192.168.1.140
+nameserver 192.168.1.141
+nameserver 192.168.1.124
 
 sudo vi /etc/hosts
 # ADD/CHANGE

@@ -1,3 +1,4 @@
+# apt-get install lvm2
 fdisk -l
 lsblk
 lsblk -fe7
