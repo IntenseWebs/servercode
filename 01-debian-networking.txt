@@ -28,6 +28,11 @@ sudo vi /etc/hostname
 ctp1.intensewebs.com
 
 sudo systemctl restart networking
+# Frozen SSH afterwards do this:
+<enter>
+~
+.
+
 ___________________________________________________________________________
 # OPTIONAL NOT NEEDED METHODS
 # IF DESIRING TO USE Netork Manager: sudo apt install network-manager

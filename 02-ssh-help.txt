@@ -14,8 +14,7 @@ vi /etc/sudoers
 sudo apt install openssh-server
 systemctl enable sshd
 systemctl start sshd
-firewall-cmd --add-service=ssh --permanent
-firewall-cmd --reload
+# sudo firewall-cmd --add-service=ssh --permanent && firewall-cmd --reload
 
 # Switchback to normal user and add public key to authorized_keys
 cd ~

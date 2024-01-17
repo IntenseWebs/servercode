@@ -1,20 +1,52 @@
+https://linuxways.net/debian/how-to-install-kvm-on-debian-12/
+
 # Checks Intel
 grep -e 'vmx' /proc/cpuinfo
 # Checks AMD-V
 grep -e 'svm' /proc/cpuinfo
 # Check both Intel and AMD
+grep -E --color=auto 'vmx|svm|0xc0f' /proc/cpuinfo
 lscpu | grep Virtualization
 lsmod | grep kvm
+sudo modprobe vhost_net
+lsmod | grep vhost
+cat /sys/module/kvm_amd/parameters/nested
 
-# sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y
+Debian /usr/bin/qemu-system-x86_64
+Almalinux /usr/libexec/qemu-kvm
 
-sudo apt install qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils libguestfs-tools genisoimage virtinst libosinfo-bin virt-viewer -y
+sudo apt install libvirt-daemon-system qemu-kvm qemu-system libvirt-clients bridge-utils libguestfs-tools genisoimage virtinst libosinfo-bin virt-viewer -y
 sudo apt install virt-manager -y
 sudo systemctl start libvirtd
 sudo systemctl enable --now libvirtd
 # ADD username to groups as your own user - NOT root
 sudo usermod -a -G libvirt,kvm $USER
 sudo reboot
+
+**WARNING** Be on server as root. nmtui for graphical. RECOMMENDED using nmtui
+sudo virsh net-list --all
+# sudo virsh net-start host-bridge
+# sudo virsh net-autostart host-bridge
+sudo modprobe vhost_net
+sudo vi /etc/modules
+# Add vhost_net
+
+ip addr
+sudo vi /etc/network/interfaces
+auto lo
+iface lo inet loopback
+iface br0 inet static
+        address 192.168.1.203
+        broadcast 192.168.1.255
+        netmask 255.255.255.0
+        gateway 192.168.1.131
+        dns-domain intensewebs.com
+        dns-nameservers 192.168.1.140 192.168.1.141 192.168.1.124
+        bridge_ports enp1s0
+        bridge_stp off
+        bridge_waitport 0
+        bridge fd 0
+______________________________________________________________________________
 
 **WARNING** Be on server as root. nmtui for graphical. RECOMMENDED using nmtui
 # create file if not created
