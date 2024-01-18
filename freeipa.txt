@@ -1,10 +1,12 @@
 # https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/index / https://youtu.be/xzfHRJNjqDI / https://www.freeipa.org/page/Howto/ISC_DHCPd_and_Dynamic_DNS_update
 # FreeIPA requires over 2Gb+ in /usr - Change to root, Check DNS
+# REPLICA - Server A can be installed with a CA and DNS services, while Replica A can be based on Server A's configuration but not host either DNS or CA services. Replica B can be added to the domain, also without CA or DNS services. At any time in the future, a CA or DNS service can be created and configured on Replica A or Replica B.
 
+# FEDORA FREEIPA SERVER FIREWALL
 systemd-resolve --status enp1s0
 firewall-cmd --get-active-zones
 firewall-cmd --list-all
-firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --permanent
+firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --add-service=dns --permanent
 firewall-cmd --add-port 80/tcp --permanent
 firewall-cmd --add-port 443/tcp --permanent
 firewall-cmd --add-port 389/tcp --permanent
@@ -19,6 +21,29 @@ firewall-cmd --add-port 123/udp --permanent
 firewall-cmd --reload
 firewall-cmd --list-all
 
+# DEBIAN FREEIPA SERVER FIREWALL
+sudo ufw --force disable \
+&& sudo ufw --force reset \
+&& sudo ufw default deny incoming \
+&& sudo ufw default allow outgoing \
+&& sudo ufw allow from 192.168.1.0/24 to any port 22 \
+&& sudo ufw allow 22/tcp \
+&& sudo ufw allow 53/tcp \
+&& sudo ufw allow 80/tcp \
+&& sudo ufw allow 389/tcp \
+&& sudo ufw allow 443/tcp \
+&& sudo ufw allow 636/tcp \
+&& sudo ufw allow 88/tcp \
+&& sudo ufw allow 464/tcp \
+&& sudo ufw allow 7389/tcp \
+&& sudo ufw allow 53/udp \
+&& sudo ufw allow 88/udp \
+&& sudo ufw allow 464/udp \
+&& sudo ufw allow 123/udp \
+&& sudo ufw --force enable \
+&& sudo ufw reload
+__________________________________________________________
+# SERVER INSTALL: TEST SERVER AT: https://SERVER.SUBDOMAIN.DOMAIN.COM/ipa/ui
 dnf install freeipa-server freeipa-server-dns nfs-utils
 fips-mode-setup --enable
 reboot
@@ -32,46 +57,48 @@ reboot
 # ipactl status stop start restart
 kinit admin
 klist
-
-# REPLICA - Server A can be installed with a CA and DNS services, while Replica A can be based on Server A's configuration but not host either DNS or CA services. Replica B can be added to the domain, also without CA or DNS services. At any time in the future, a CA or DNS service can be created and configured on Replica A or Replica B.
 __________________________________________________________
-
-# Setup for client:
-sudo yum -y install freeipa-client ipa-admintools
-firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --permanent
-ipa-client-install --mkhomedir --force-ntpd
-ipa sudorule-add --cmdcat=all All
+# USER CREATE: Add User in FreeIPA Web GUI or below. Go to new  machine to test.
 ipa user-add bsmith
 ipa user-mod bsmith --title="Accounting II"
 ipa user-find smith
 kinit bsmith
 klist
+__________________________________________________________
+# CERTIFICATE & USER PUBLIC PRIVATE KEYS
 
+
+
+__________________________________________________________
+# CLIENT MACHINE
+# FEDORA # sudo apt install freeipa-client ipa-admintools
+sudo apt install freeipa-client
+firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --permanent
+ipa-client-install --mkhomedir --force-ntpd
+__________________________________________________________
+# SUDO RULES
+
+ipa sudorule-add --cmdcat=all All
 # To check sudo rules:
 ipa sudorule-find All
-
 ipa sudorule-add ANY \
     --hostcat=all \
     --cmdcat=all \
     --runasusercat=all \
     --runasgroupcat=all
-
 ipa sudorule-add-user ANY \
     --users=user --groups=group
-
 ipa sudorule-add-option ANY \
     --sudooption='!authenticate'
 
-
+__________________________________________________________
 User2 rob0: I *think* freeipa has a named DLZ module that pulls records straight from LDAP
 User2 not 100% sure (I know Samba does exactly that for AD-hosted zones, however)
 User3 Does it work with IXFR queries, do you know? And I suppose UPDATE queries make the change in the LDAP backend?
 User2 never tried IXFR, but yeah, Windows AD hosts heavily use UPDATE queries for self-registration
 User2 usually with GSS-TSIG
 
-2. Join the server to the domain.
-
-// Join server to domain
+2. // Join server to domain
 sudo dnf install realmd oddjob oddjob-mkhomedir sssd adcli
 sudo realm join -U Administrator internal.domain.com -u Administrator
 // Type in domain admin password to authenticate.
@@ -80,9 +107,7 @@ vi /etc/sssd/sssd.conf
 fallback_homedir = /home/%u
 use_fully_qualified_names = False
 
-3. Install needed packages.
-
-// Install needed packages
+3. // Install needed packages
 sudo dnf update
 sudo dnf install git gcc
 // Allow weak crypto
