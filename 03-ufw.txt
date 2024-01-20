@@ -1,4 +1,8 @@
 https://www.digitalocean.com/community/tutorials/ufw-essentials-common-firewall-rules-and-commands
+sudo apt install ufw
+ufw enable
+reboot
+
 sudo ufw status verbose
 sudo ufw status numbered
 sudo ufw delete 1

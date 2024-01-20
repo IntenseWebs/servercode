@@ -101,15 +101,15 @@ zone "1.168.192.in-addr.arpa" {
  check the file for errors
  sudo named-checkconf
  
-5) Create a forward lookup zone in /var/lib/bind. Copy an existing file to one with the name used before e.g.
-sudo cp /etc/bind/db.local /var/lib/bind/db.intensewebs.com
-sudo vi db.intensewebs.com
+# 5) Create a forward lookup zone in /var/lib/bind. Copy an existing file to one with the name used before e.g.
+# sudo cp /etc/bind/db.local /var/lib/bind/db.intensewebs.com
+# sudo vi db.intensewebs.com
 
 $ORIGIN intensewebs.com.
 $TTL    604800
 ;
 @       IN      SOA     ns1.intensewebs.com. dns.intensewebs.com. (
-                             58         ; Serial
+                             60         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
                         2419200         ; Expire
@@ -122,13 +122,14 @@ $TTL    604800
 ;
 alma1   IN      A       192.168.1.121
 git     IN      A       192.168.1.123
-ipa1    IN      A       192.168.1.124
-ipa2    IN      A       192.168.1.125
 pg      IN      A       192.168.1.126
 ;
 ns1     IN      A       192.168.1.140
 ns2     IN      A       192.168.1.141
 tdebian IN      A       192.168.1.200
+tfedora IN      A       192.168.1.202
+tdebian2        IN      A       192.168.1.203
+tfedora2        IN      A       192.168.1.204
 sd      IN      A       192.168.1.222
 superdog        IN      A       192.168.1.223
 ;
@@ -141,7 +142,17 @@ t       IN      A       129.146.170.34
 lab     IN      A       129.146.170.34
 ;
 u       IN      A       129.153.118.150
-
+;
+$ORIGIN corp.intensewebs.com.
+;
+@       IN      NS     ipa1.corp.intensewebs.com.
+;
+        IN      NS     ipa1.corp.intensewebs.com.
+        IN      NS     ipa2.corp.intensewebs.com.
+;
+ipa1    IN      A      192.168.1.124
+ipa2    IN      A      192.168.1.125
+_____________________________________________________________________ex
 # check the file syntax
 sudo named-checkzone intensewebs.com db.intensewebs.com
  

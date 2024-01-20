@@ -10,7 +10,7 @@ cat /etc/NetworkManager/system-connections/enp1s0.nmconnection
 
 sudo hostnamectl set-hostname new.name
 sudo hostnamectl set-hostname ipa2.corp.intensewebs.com
-sudo nmcli con modify 'enp1s0' ifname enp1s0 ipv4.method manual ipv4.addresses 192.168.1.125/24 ipv4.gateway 192.168.1.131 ipv4.dns 192.168.1.140 ipv4.dns-search corp.intensewebs.com
+sudo nmcli con modify 'enp1s0' ifname enp1s0 ipv4.method manual ipv4.addresses 192.168.1.124/24 ipv4.gateway 192.168.1.131 ipv4.dns 192.168.1.140 ipv4.dns-search corp.intensewebs.com
 #DO NOT DOWN THE NETWORK CONNECTION IF YOU ARE LOGGED IN REMOTE BY SSH OR YOU WILL LOSE THE CONNECTION. It might be better to Reboot?
 sudo nmcli con down 'enp1s0'
 sudo nmcli con up 'enp1s0'

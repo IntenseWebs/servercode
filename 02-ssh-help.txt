@@ -39,7 +39,7 @@ PermitRootLogin no
 systemctl restart sshd
 
 # TO REMOVE OLD KEYS FROM known_hosts file
-ssh-keygen -f "/home/privacy/.ssh/known_hosts" -R "192.168.1.200"
+ssh-keygen -f "/home/privacy/.ssh/known_hosts" -R "192.168.1.124"
 
 ----------------------------------------------------------
 #AGENT for Private Keys on Linux - MANUAL run ssh-agent and add ssh private key.

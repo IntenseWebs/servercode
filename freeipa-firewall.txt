@@ -1,0 +1,45 @@
+# FEDORA FREEIPA SERVER FIREWALL
+systemd-resolve --status enp1s0
+firewall-cmd --get-active-zones
+firewall-cmd --list-all
+firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --add-service=dns --permanent
+firewall-cmd --add-port 80/tcp --permanent
+firewall-cmd --add-port 443/tcp --permanent
+firewall-cmd --add-port 389/tcp --permanent
+firewall-cmd --add-port 636/tcp --permanent
+firewall-cmd --add-port 88/tcp --permanent
+firewall-cmd --add-port 464/tcp --permanent
+firewall-cmd --add-port 7389/tcp --permanent
+firewall-cmd --add-port 88/udp --permanent
+firewall-cmd --add-port 464/udp --permanent
+firewall-cmd --add-port 53/udp --permanent
+firewall-cmd --add-port 123/udp --permanent
+firewall-cmd --reload
+firewall-cmd --list-all
+
+# DEBIAN FREEIPA SERVER FIREWALL as root
+apt install ufw
+systemctl enable ufw
+ufw enable
+sudo ufw status verbose
+sudo ufw status numbered
+sudo ufw --force disable \
+&& sudo ufw --force reset \
+&& sudo ufw default deny incoming \
+&& sudo ufw default allow outgoing \
+&& sudo ufw allow from 192.168.1.0/24 to any port 22 \
+&& sudo ufw allow 53/tcp \
+&& sudo ufw allow 80/tcp \
+&& sudo ufw allow 389/tcp \
+&& sudo ufw allow 443/tcp \
+&& sudo ufw allow 636/tcp \
+&& sudo ufw allow 88/tcp \
+&& sudo ufw allow 464/tcp \
+&& sudo ufw allow 7389/tcp \
+&& sudo ufw allow 53/udp \
+&& sudo ufw allow 88/udp \
+&& sudo ufw allow 464/udp \
+&& sudo ufw allow 123/udp \
+&& sudo ufw --force enable \
+&& sudo ufw reload
+reboot
