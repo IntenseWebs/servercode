@@ -22,6 +22,7 @@ sudo apt autoclean && sudo apt autoremove
 sudo apt install gvfs-backends
 sudo apt reinstall gvfs-backends
 
+systemctl list-unit-files | grep masked
 sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
 tar zcvf email-backup.tar.gz /home/privacy/.thunderbird/
@@ -53,6 +54,12 @@ sudo alsactl init
 pacmd list-cards
 sudo pacmd list-cards
 sudo apt-get install alsa-tools-gui
+---------------------------------------------
+# sudo systemctl restart networking
+# Frozen SSH afterwards do this:
+<enter>
+~
+.
 ---------------------------------------------
 sudo dnf install akmod-nvidia
 sudo dnf install xorg-x11-drv-nvidia-cuda

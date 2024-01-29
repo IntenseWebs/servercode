@@ -1,81 +1,39 @@
 # https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/index / https://youtu.be/xzfHRJNjqDI / https://www.freeipa.org/page/Howto/ISC_DHCPd_and_Dynamic_DNS_update # https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/identity_management_guide/linux-manual#host-setup-proc
 # FreeIPA requires over 2Gb+ in /usr - Change to root, Check DNS
 # REPLICA - Server A can be installed with a CA and DNS services, while Replica A can be based on Server A's configuration but not host either DNS or CA services. Replica B can be added to the domain, also without CA or DNS services. At any time in the future, a CA or DNS service can be created and configured on Replica A or Replica B.
-
-# FEDORA FREEIPA SERVER FIREWALL
-systemd-resolve --status enp1s0
-firewall-cmd --get-active-zones
-firewall-cmd --list-all
-firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --add-service=dns --permanent
-firewall-cmd --add-port 80/tcp --permanent
-firewall-cmd --add-port 443/tcp --permanent
-firewall-cmd --add-port 389/tcp --permanent
-firewall-cmd --add-port 636/tcp --permanent
-firewall-cmd --add-port 88/tcp --permanent
-firewall-cmd --add-port 464/tcp --permanent
-firewall-cmd --add-port 7389/tcp --permanent
-firewall-cmd --add-port 88/udp --permanent
-firewall-cmd --add-port 464/udp --permanent
-firewall-cmd --add-port 53/udp --permanent
-firewall-cmd --add-port 123/udp --permanent
-firewall-cmd --reload
-firewall-cmd --list-all
-
-# DEBIAN FREEIPA SERVER FIREWALL as root
-apt install ufw
-systemctl enable ufw
-ufw enable
-sudo ufw status verbose
-sudo ufw status numbered
-sudo ufw --force disable \
-&& sudo ufw --force reset \
-&& sudo ufw default deny incoming \
-&& sudo ufw default allow outgoing \
-&& sudo ufw allow from 192.168.1.0/24 to any port 22 \
-&& sudo ufw allow 53/tcp \
-&& sudo ufw allow 80/tcp \
-&& sudo ufw allow 389/tcp \
-&& sudo ufw allow 443/tcp \
-&& sudo ufw allow 636/tcp \
-&& sudo ufw allow 88/tcp \
-&& sudo ufw allow 464/tcp \
-&& sudo ufw allow 7389/tcp \
-&& sudo ufw allow 53/udp \
-&& sudo ufw allow 88/udp \
-&& sudo ufw allow 464/udp \
-&& sudo ufw allow 123/udp \
-&& sudo ufw --force enable \
-&& sudo ufw reload
-reboot
 __________________________________________________________
-# SERVER INSTALL: TEST SERVER AT: https://SERVER.SUBDOMAIN.DOMAIN.COM/ipa/ui
+
+# SERVER INSTALL: # ipactl status stop start restart TEST SERVER AT: https://SERVER.SUBDOMAIN.DOMAIN.COM/ipa/ui
 dnf install freeipa-server freeipa-server-dns nfs-utils
 fips-mode-setup --enable
 reboot
 
 fips-mode-setup --check
 update-crypto-policies --show
-
 ipa-server-install --mkhomedir
 reboot
 
-# ipactl status stop start restart
 kinit admin
 klist
 __________________________________________________________
 # CLIENT MACHINE
 # FEDORA # sudo dnf install freeipa-client ipa-admintools
+# ipa host-add-managedby --hosts=server.example.com ipaclient.example.com
+# ipa-getkeytab -s server.example.com -p host/ipaclient.example.com -k /tmp/ipaclient.keytab
 apt install freeipa-client
-ipa-client-install --mkhomedir --all-ip-addresses --enable-dns-updates --request-cert --domain iweb.corp --server ipa1.iweb.corp --realm IWEB.CORP --fixed-primary ipa1.iweb.corp
+ipa-client-install --enable-dns-updates --mkhomedir --ip-address
 
+ipa-client-install --uninstall
 __________________________________________________________
 # USER CREATE: Add User in FreeIPA Web GUI or below. Go to new  machine to test. Require ipa-admintools
+# ipa host-add --force --ip-address=192.168.166.31 ipaclient.example.com
 kinit admin
 klist
 ipa user-add bsmith
 ipa user-mod bsmith --title="Accounting II"
 ipa user-add bsmith --first=Bob --last=Smith --email=bsmit@intensewebs.com
 ipa user-find bsmith
+
 ipa config-mod --defaultshell=/bin/bash
 kinit bsmith
 klist

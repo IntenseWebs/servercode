@@ -1,0 +1,50 @@
+firewall-cmd --permanent --add-port=80/tcp
+firewall-cmd --permanent --add-port=443/tcp
+firewall-cmd --reload
+sudo firewall-cmd --state
+firewall-cmd --list-services
+firewall-cmd --list-all
+curl localhost:3000
+
+cd /etc/nginx
+vi /etc/nginx/nginx.conf
+
+user  nginx;
+worker_processes  auto;
+
+error_log  /var/log/nginx/error.log notice;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    include /etc/nginx/conf.d/*.conf;
+}
+
+cd /etc/nginx/conf.d
+vi /etc/nginx/conf.d/pg.iweb.city.conf
+
+server {
+        listen 3001;
+        server_name pg.iweb.city;
+        root /var/www/pg.iweb.city/html;
+}

@@ -14,29 +14,28 @@ pvs
 vgs
 lvs
 
-RESIZE
-# unmount /home because an ext4 filesystem cannot be reduced while mounted
+# RESIZE LVM AS ROOT: https://www.golinuxcloud.com/lvm-shrink-logical-volume/
+df -hT /home
+lsblk -f
 umount /home
-# resize the ext4 filesystem in logical volume zeus-vg/home to 50G
+fsck -f /dev/mapper/pg--vg-home
+resize2fs /dev/mapper/pg--vg-home 5G
+lvreduce -r -L 5G /dev/mapper/pg--vg-home
+mount /dev/mapper/pg--vg-home /home
+
+# Extend the logical volume zeus-vg/var by 4G
+lvextend -L+4G /dev/mapper/zeus--vg-var
+# resize the ext4 filesystem in logical volume zeus-vg/var to the new volume size
+resize2fs /dev/mapper/zeus--vg-var
+
+#RESIZE ext4 - # unmount /home because an ext4 filesystem cannot be reduced while mounted
+umount /home
 fsck -f /dev/mapper/zeus--vg-home
 resize2fs /dev/mapper/zeus--vg-home 50G
 # reduce the logical volume zeus-vg/home to 50G
 lvreduce -L50G /dev/mapper/zeus--vg-home
 # remount /home
 mount /home
-
-# Extend the logical volume zeus-vg/var by 20G
-lvextend -L+20G /dev/mapper/zeus--vg-var
-# resize the ext4 filesystem in logical volume zeus-vg/var to the new volume size
-resize2fs /dev/mapper/zeus--vg-var
-
-# RESIZE AS ROOT: https://www.golinuxcloud.com/lvm-shrink-logical-volume/
-df -hT /home
-umount /home
-fsck -f /dev/mapper/sd--vg-home
-resize2fs /dev/mapper/sd--vg-home 100G
-lvreduce -r -L 100G /dev/mapper/sd--vg-home
-mount /dev/mapper/sd--vg-home /home
 
 # MOUNT OTHER DRIVES
 cd/media

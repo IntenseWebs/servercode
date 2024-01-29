@@ -17,7 +17,6 @@ domain intensewebs.com
 search intensewebs.com
 nameserver 192.168.1.140
 nameserver 192.168.1.141
-nameserver 192.168.1.124
 
 sudo vi /etc/hosts
 # ADD/CHANGE
@@ -27,7 +26,8 @@ sudo vi /etc/hostname
 # ADD/CHANGE
 ctp1.intensewebs.com
 
-sudo systemctl restart networking
+reboot
+# sudo systemctl restart networking
 # Frozen SSH afterwards do this:
 <enter>
 ~
