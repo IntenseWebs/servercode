@@ -9,6 +9,7 @@ sudo systemctl disable firewalld.service
 apt policy firewalld
 firewall-cmd --permanent --add-port=80/tcp
 firewall-cmd --permanent --add-port=443/tcp
+firewall-cmd --permanent --add-source=192.168.1.0/24
 firewall-cmd --reload
 sudo firewall-cmd --state
 firewall-cmd --list-services
@@ -17,7 +18,7 @@ firewall-cmd --list-all
 #VNC
 sudo firewall-cmd --zone=public --add-port 5901/tcp --permanent
 sudo firewall-cmd --zone=public --add-service=vnc-server --permanent
-sudo firewall-cmd --zone=public          192.168.1.0/24
+sudo firewall-cmd --zone=public --add-source=192.168.1.0/24
 sudo firewall-cmd --reload
 
 firewall-cmd --permanent --add-service=vnc-server

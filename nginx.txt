@@ -6,6 +6,8 @@ firewall-cmd --list-services
 firewall-cmd --list-all
 curl localhost:3000
 
+/etc/init.d/nginx restart
+
 cd /etc/nginx
 vi /etc/nginx/nginx.conf
 

@@ -1,7 +1,7 @@
 sudo apt install git
 sudo apt install git-all
 git config --global user.name "IntenseWebs"
-git config --global user.email git@intensewebs.com
+git config --global user.email junkmail@intensewebsjunk.com
 
 # ONLY ADD FIRST TIME ONLY (BELOW)
 git init --initial-branch=main servercode
@@ -14,7 +14,6 @@ git add kvm.txt
 git commit * -m "Initial Commit"
 git commit -a
 git status
-
 
 # CLONE ON BRANCH
 git clone ssh://git@192.168.1.123/~/Repos/servercode servercode
@@ -32,7 +31,6 @@ git commit * -m "Updating . . ."
 git remote -v
 # git push origin master:refs/heads/upload
 git push origin main:refs/heads/upload
-
 
 # ON MASTER
 cd ~/Repos/servercode
@@ -57,7 +55,7 @@ git push
 
 git config --list
 git log
-
+____________________________________________________________________________
 #GIT CLONE TO ONE FILE FOR BACKUP
 #! /bin/bash
 

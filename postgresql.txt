@@ -26,6 +26,13 @@ su -c "psql" - postgres
 ALTER ROLE super WITH PASSWORD '************';
 GRANT ALL PRIVILEGES ON DATABASE <usernamedb> TO <name>;
 
+grant ALL on database giteadb to group MY_GROUP;
+GRANT CONNECT ON DATABASE my_db TO my_user
+grant all privileges on schema MY_SCHEMA to group MY_GROUP;
+GRANT pg_read_all_data TO my_user;
+GRANT pg_write_all_data TO my_user;
+
+
 sudo -i -u postgres
 psql
 postgres=# \q

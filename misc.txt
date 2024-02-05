@@ -2,6 +2,8 @@
 # OPEN SOURCE BENCHMARKS
 speccpu, netperf, memtier_benchmark, aerospike, hpcc
 
+inxi -Fxxc0 | nc termbin.com 9999
+
 dnf grouplist -v
 dnf groupinstall "Fedora Workstation"
 dnf groupinstall "Cinnamon Desktop"
