@@ -1,0 +1,13 @@
+https://www.youtube.com/watch?v=yn95Cv7Xr7Q
+kind, minicube, k3s
+
+kind create cluster
+kns
+kctx
+kubectl apply -f app.yaml
+kubectl get pods
+kns
+kubectl get svc
+docker ps
+docker inspect cd45b1645d41 | grep 172
+docker inspect cd45b1645d41 | grep 192
