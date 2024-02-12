@@ -46,6 +46,7 @@ ssh-keygen -f "/home/privacy/.ssh/known_hosts" -R "192.168.1.124"
 eval "$(ssh-agent -s)"
 chmod 600 /c/Users/username/Documents/SETTINGS/id_rsa
 ssh-add /c/Users/username/Documents/SETTINGS/id_rsa
+ssh-add /directory/my_id_rsa
 
 # To create a systemd ssh-agent service, you need to create a file in ~/.config/systemd/user/ssh-agent.service because ssh-agent is user isolated.
 
@@ -100,4 +101,4 @@ Running  ssh-agent          OpenSSH Authentication Agent
 ssh-add -l
 ssh-add -L
 
-Could be multiple things; here are just a couple. 1. If you were using authorized_keys, were they copied to new user on Rocky? 2. Is sshd enabled on Rocky? systemctl status sshd 3. Firewall opened on Rocky? firewall-cmd --add-service=ssh --permanent 4. Permissions need reset on .ssh & authorized_keys; happens a lot more than you may realize. 5. Hopefully not root ssh login? Check /etc/ssh/sshd_config PasswordAuthentication PermitRootLogin Values
+Could be multiple things; here are just a couple. 1. If you were using authorized_keys, were they copied to new user on Rocky? 2. Is sshd enabled on Rocky? systemctl status sshd 3. Firewall opened on Rocky? firewall-cmd --add-service=ssh --permanent 4. Permissions need reset on .ssh & authorized_keys; happens a lot more than you may realize. 5. Hopefully not root ssh login? Check /etc/ssh/sshd_config PasswordAuthentication PermitRootLogin Values 6. Is SSH Private Key added to SSH Agent?
