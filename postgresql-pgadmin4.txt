@@ -10,4 +10,10 @@ apt install pgadmin4-web
 sudo ufw allow http
 sudo ufw allow https
 
+sudo adduser MYUSERNAME
+sudo usermod -aG sudo MYUSERNAME
+su - MYUSERNAME
+sudo usermod -a -G www-data $USER
+
 sudo apt remove curl
+

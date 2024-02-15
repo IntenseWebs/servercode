@@ -51,3 +51,12 @@ insmod part_gpt
 insmod fat
 search --no-floppy --fs-uuid --set=root EFC8-2865
 chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+
+_______________________________________________________________________
+sudo apt-get update
+sudo apt-get install --reinstall grub
+sudo apt-get dist-upgrade
+sudo apt-get upgrade
+sudo apt autoremove
+
+Then reboot and try running apt-get dist-upgrade again, the issue should be resolved.
