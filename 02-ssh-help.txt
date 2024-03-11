@@ -1,4 +1,6 @@
-# Generate OpenSSH Private Key id_rsa and Public Key id_rsa.pub
+# ssh-keygen -t ed25519 -C "user@website.com"
+# ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C "john@example.com"
+# Generate OpenSSH Private Key id_rsa and Public Key id_rsa.pub (4096, 7680, 15360)
 ssh-keygen -t rsa -b 4096 -C "user@website.com"
 
 # ENABLE root access during OS install with password but don't enable SSH remote login for 'root'.
@@ -27,7 +29,7 @@ chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
 
 # Restart machine, Switchback to existing working machine with SSH authorized_keys installed
-ssh-copy-id -f iw@192.168.1.203
+ssh-copy-id -f user@hostname.domain.com
 
 # IMPORTANT -DISABLE SSH PASSWORDS - Only uses Public w/Private Keys for SSH. Local Console logins with passwords is still allowed.
 su - root

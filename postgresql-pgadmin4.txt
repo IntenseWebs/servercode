@@ -4,6 +4,22 @@ echo "deb https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_release -cs)
 cat /etc/apt/sources.list.d/pgadmin4.list
 curl https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo apt-key add
 
+su - postgres
+psql
+# DROP DATABASE djadmindb;
+CREATE USER djadmin WITH PASSWORD '***************************' CREATEDB;
+CREATE DATABASE djadmindb WITH OWNER djadmin;
+ALTER ROLE djadmin SET client_encoding TO 'utf8';
+ALTER ROLE djadmin SET default_transaction_isolation TO 'read committed';
+ALTER ROLE djadmin SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE djadmindb TO djadmin;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO djadmin;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO djadmin;
+grant postgres to djadmin
+\q
+
+psql "postgres://djadmin@192.168.1.6/djadmindb"
+
 sudo apt update
 apt install pgadmin4-web
 /usr/pgadmin4/bin/setup-web.sh
@@ -14,6 +30,6 @@ sudo adduser MYUSERNAME
 sudo usermod -aG sudo MYUSERNAME
 su - MYUSERNAME
 sudo usermod -a -G www-data $USER
-
 sudo apt remove curl
+
 

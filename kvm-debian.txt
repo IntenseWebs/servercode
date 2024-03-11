@@ -31,24 +31,21 @@ sudo modprobe vhost_net
 sudo vi /etc/modules
 # Add vhost_net
 
-ip addr
-sudo vi /etc/network/interfaces
-auto lo
-iface lo inet loopback
-iface br0 inet static
-        address 192.168.1.203
-        broadcast 192.168.1.255
-        netmask 255.255.255.0
-        gateway 192.168.1.131
-        dns-domain intensewebs.com
-        dns-nameservers 192.168.1.140 192.168.1.141 192.168.1.124
-        bridge_ports enp1s0
-        bridge_stp off
-        bridge_waitport 0
-        bridge fd 0
 ______________________________________________________________________________
+#Be on server as root. nmtui for graphical. RECOMMENDED using nmtui - see kvm-debian-ovmf-uefi-boot-fix.pdf
+sudo vi /etc/libvirt/qemu/networkshost-bridge.xml
+#Add the following lines:
+<network>
+  <name>host-bridge</name>
+  <forward mode="bridge"/>
+  <bridge name="br0"/>
+</network>
+#Run the following commands to start the newly created bridge and make it as default bridge for VMs:
+sudo virsh net-define /etc/libvirt/qemu/networkshost-bridge.xml
+sudo virsh net-autostart host-bridge
+# virsh net-destroy default
+# virsh net-undefine default
 
-**WARNING** Be on server as root. nmtui for graphical. RECOMMENDED using nmtui
 # create file if not created
 sudo vi /etc/sysctl.d/bridge.conf
 # add the following lines
@@ -83,16 +80,3 @@ service NetworkManager restart
 nmcli device show
 nmcli -f bridge con show br0
 
-# Create file
-sudo vi /etc/libvirt/qemu/networkshost-bridge.xml
-#Add the following lines:
-<network>
-  <name>host-bridge</name>
-  <forward mode="bridge"/>
-  <bridge name="br0"/>
-</network>
-#Run the following commands to start the newly created bridge and make it as default bridge for VMs:
-sudo virsh net-define /etc/libvirt/qemu/networkshost-bridge.xml
-sudo virsh net-autostart host-bridge
-virsh net-destroy default
-virsh net-undefine default
