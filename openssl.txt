@@ -1,0 +1,98 @@
+OpenSSL & Asymmetric Cryptography
+Operations: Encryption, Signatures, Key Exchanges
+Algorithms: RSA - Rivest, Shamir Adlemna, DSA - Digital Signature Algorithm, DH - Diffie-Hellman, (ECC - Elliptic Curve Cryptography Variants)
+Only RSA & DSA can do signatures & therefore Certificates
+
+Generate 2048 bit RSA Private Key saved as MYKEY1.pem: openssl genrsa -out MYKEY1.pem 2048
+Generate 4096 bit RSA Private Key, encrypted with AES128: openssl genrsa -out MYKEY2.pem -aes128 4096
+    Key size must be last argument of command
+    Omit -out <FILE> argument to output to StdOut
+    Other encryption algorithms are also supported: -aes128, -aes192, -aes256, -des3, -des
+Generate DSA Parameters File: openssl dsaparam -out DSA-PARAM.pem 1024
+Generate DSA Keys file with Parameters file: openssl gendsa -out DSA-MYKEY2.pem DSA-PARAM.pem
+Generate DSA Parameters and Keys in one File: openssl dsaparam -genkey -out DSA-PARAM-MYKEY2.pem 2048
+Generate EC Parameters file: openssl genpkey: -genparam -algorithm EC -pkeyopt ec_paramgen_curve:secp384r1 -out EC-PARAM.pem
+Generate EC Keys from Parameters file: openssl genpkey: -paramfile EC-PARAM.pem -out EC-MYKEY2.pem
+Generate EC Keys directly: openssl genpkey: -algorithm EC -pkeyopt ec_paramgen_curve:P-384 -out EC-MYKEY2.pem
+View supported Elliptic Curves: openssl ecparam: -list_curves
+    Recommended Curves: prime256v1, secp384r1, secp521r1 (identical to P-256, P-384, P-521):
+
+Inspect RSA, DSA, and Elliptic Curve Keys
+Converting an RSA Private Key into text: openssl rsa -in MYKEY2.pem -noout -text
+Removing encryption from an RSA key file: openssl rsa -in ENCRYPTED-MYKEY2.pem -out MYKEY2.pem
+Encrypting an RSA Key File: openssl rsa -in MYKEY2.pem -aes128 -out ENCRYPTED-MYKEY2.pem
+
+Inspect any Key file using pkey utility
+Converting any Private Key file into text (RSA, DSA, or EC): openssl pkey -in MYKEY2.pem -noout -text
+Extracting only Public Key as text from any Key file: openssl pkey -in MYKEY2.pem -noout -text_pub
+Extracting only Public Key in PEM format: openssl pkey -in MYKEY2.pem -pubout
+ pkey expects a Private Key file. Public Key file can be read with -pubin
+
+Inspecting DSA Parameters and Keys
+Inspecting DSA Parameters file: openssl dsaparam -in DSA-PARAM.pem -text -noout
+Inspecting DSA Private Key file: openssl dsa -in DSA-MYKEY2.pem -text -noout
+
+Inspect EC Parameters and Keys
+Inspecting Elliptic Curve (EC) Parameters file: openssl ecparam -in EC-PARAM.pem -text -noout
+Inspecting Elliptic Curve (EC) Private Key file: openssl ec -in EC-MYKEY2.pem -text -noout
+
+Check if RSA Key matches a CSR or Cert
+Compare Modulus values to see if files match each other
+openssl req -in CSR.pem -noout -modulus
+openssl x509 -in CERT.pem -noout -modulus
+openssl rsa -in MYKEY2.pem -noout-modulus
+
+Check if EC Key matches a CSR or Cert
+Compare Modulus values to see if files match each other
+openssl req -in CSR.pem -noout -modulus
+openssl x509 -in CERT.pem -noout -modulus
+openssl rsa -in MYKEY2.pem -noout -modulus
+
+Generate Certificate Signing Requests (CSRs) and Self-Signed Certificates
+Generate CSR with existing Private Key file: openssl req -new -key MYKEY2.pem -out CSR.pem
+Generate CSR and new Private Key file: openssl req -new -newkey <alg:opt> -nodes -out CSR.pem
+Generate Certificate with existing Private Key file: openssl req -x509 -key MYKEY2.pem -out CERT.pem
+Generate Certificate and new Private Key file: openssl req -x509 -newkey <alg:opt> -nodes -out CERT.pem
+Commands above will prompt you for the Subject Distinguished Name (DN) attributes. Alternatively, you can specify them using -subj:
+    Examples: -subj "/CN=website.com" --or-- -subj "/C=US/ST=Texas/L=Dallas/O=ACME Inc./CN=acme.com"
+    -nodes - Generate Key File with No DES encryption - Skips prompt for PEM Pass phrase -<digest> - Sign CSR/Cert using <digest> hashing algorithm. View supported algorithms: openssl list --digest-commands -config - Specify config file with custom options. Default Config file: openssl.cnf in directory specified by openssl version -d
+    The argument -newkey <alg:opt> lets you create RSA, DSA, or EC Keys: -newkey 1024 - Generate 1024 bit RSA Keys (legacy) -newkey dsa:DSA-PARAM.pem - Generate DSA Keys using DSA Parameters -newkey rsa:2048 - Generate 2048 bit RSA Keys -newkey ec:EC-PARAM.pem - Generate EC Keys using EC Parameters If -key or -newkey is not specified, a private key file will be automatically generated using directives specified in openssl.cnf
+
+Inspect Certificate Signing Requests (CSRs) and Certificates
+Viewing x509 Certificate as human readable Text: openssl x509 -in CERT.pem -noout -text
+Viewing Certificate Signing Request (CSR) contents as Text: openssl req -in CSR.pem -noout -text
+Extract specific pieces of information from x509 Certificates
+openssl x509 -in CERT.pem -noout -dates
+openssl x509 -in CERT.pem -noout -issuer –subject
+    Other items -modulus -pubkey -ocsp_uri -ocspid
+    You can extract: -serial -startdate -enddate
+Extract specific Extension(s) from a certificate
+openssl x509 -in CERT.pem -noout -ext subjectAltName
+openssl x509 -in CERT.pem -noout -ext authorityInfoAccess,crlDistributionPoints
+    Other extensions you can extract: basicConstraints nameConstraints certificatePolicies
+    keyUsage extendedKeyUsage subjectKeyIdentifier authorityKeyIdentifier
+Extract all Extensions from a certificate: openssl x509 -in CERT.pem -noout -text | sed '/X509v3 extensions/,/Signature Algorithm:/!d'
+
+File Formats and Converting between formats (PEM, DER, PFX)
+To check if file is PEM format: openssl x509 -in FILE
+To check if file is DER format: openssl x509 -in FILE -inform DER
+To check if file is PFX format: openssl pkcs12 -in FILE -nodes
+    To check, or convert, PEM or DER Key Files use openssl pkey instead of openssl x509 and same command arguments.
+Convert PEM Certificate file to DER: openssl x509 -in CERT.pem -outform DER -out CERT.der
+Convert DER Certificate file to PEM: openssl x509 -in CERT.der -inform der -out CERT.pem
+PEM --> PFX
+Convert PEM Certificate(s) to PFX: openssl pkcs12 -in CERTS.pem -nokeys -export -out CERTS.pfx
+    To include a key in PFX file use -inkey MYKEY2.pem instead of -nokeys
+PFX --> PEM
+To extract everything within a PFX file as a PEM file: openssl pkcs12 -in FILE.pfx -out EVERYTHING.pem -nodes
+To extract only the Private Key from a PFX file as PEM: openssl pkcs12 -in FILE.pfx -out MYKEY2.pem -nodes -nocerts
+    PFX files can contain Certificate(s), or Certificate(s) + one matching Key
+    -clcerts   - extract only end-entity certificate (client certificate)
+    -cacerts   - extract all but end-entity certificate -nokeys
+    -extract only certficiates
+
+
+
+
+
+
