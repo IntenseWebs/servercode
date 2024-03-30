@@ -1,0 +1,81 @@
+https://www.learnlinux.tv/complete-ansible-semaphore-tutorial-from-installation-to-automation/
+https://github.com/ansible-semaphore/semaphore/releases
+https://www.semui.co/
+
+sudo adduser --system --group --home /home/mynewuser mynewuser
+
+sudo apt install mariadb-server
+sudo mysql_secure_installation
+sudo mariadb
+
+CREATE DATABASE semaphore_db;
+GRANT ALL PRIVILEGES ON semaphore_db.* TO semaphore_user@localhost IDENTIFIED BY 'randomly_generated_password_here';
+exit
+
+wget https://github.com/ansible-semaphore/semaphore/releases/download/v<VERSION>/semaphore_<VERSION>_linux_amd64.deb
+sudo dpkg -i semaphore*.deb
+semaphore setup
+semaphore server --config config.json
+sudo mkdir /etc/semaphore
+sudo mv config.json /etc/semaphore/
+sudo chown -R semaphore:semaphore /etc/semaphore
+
+Creating a Systemd service
+sudo nano /etc/systemd/system/semaphore.service
+
+[Unit]
+Description=Ansible Semaphore
+Documentation=https://docs.ansible-semaphore.com/
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=/usr/bin/semaphore
+ConditionPathExists=/etc/semaphore/config.json
+
+[Service]
+ExecStart=/usr/bin/semaphore server --config /etc/semaphore/config.json
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10s
+User=semaphore
+Group=semaphore
+
+[Install]
+WantedBy=multi-user.target
+
+
+sudo systemctl daemon-reload
+sudo systemctl enable semaphore.service
+sudo systemctl start semaphore.service
+
+Playbook Repository
+In order for us to continue with this example, you’ll need a Git repository with the following local.yml file inside:
+
+---
+- hosts: my_servers
+  become: true
+  tasks:
+    - name: Print OS info
+      ansible.builtin.package:
+        name: apache2
+
+Configure Semaphore
+The following code is used to create an environment within Semaphore:
+
+create environment
+
+{
+  "var_environment": "production"
+}
+
+In order to ensure Semaphore can run commands properly, we’ll need a line similar to the one below added to /etc/sudoers.d/semaphore on the target (the instance that our Semaphore server will be configuring). Be sure to replace semaphore in both the file name and inside the file to match the username of the user you intend to use with Semaphore.
+
+semaphore ALL=(ALL) NOPASSWD: ALL
+
+Other config files
+The following format was used for the inventory file (be sure to change the information to match yours):
+
+[all:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[web_servers]
+172.234.197.30

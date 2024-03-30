@@ -13,6 +13,10 @@ apt install sudo
 vi /etc/sudoers
 # username    ALL=(ALL)       ALL
 
+# vi /etc/sudoers.d/mynewuser
+# mynewuser   ALL=(ALL)       NOPASSWD: ALL
+chmod 440 /etc/sudoers.d/mynewuser
+
 sudo apt install openssh-server
 systemctl enable sshd
 systemctl start sshd
