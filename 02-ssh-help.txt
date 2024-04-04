@@ -2,27 +2,27 @@
 # ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C "john@example.com"
 # Generate OpenSSH Private Key id_rsa and Public Key id_rsa.pub (4096, 7680, 15360)
 ssh-keygen -t rsa -b 4096 -C "user@website.com"
-
+----------------------------------------------------------
 # ENABLE root access during OS install with password but don't enable SSH remote login for 'root'.
 # DEBIAN--LOGIN AS ROOT - Adding SUDO
 su - root
 sudo apt update && sudo apt upgrade
 apt install sudo
-
+----------------------------------------------------------
 # ADD username to /etc/sudoers right under root user
 vi /etc/sudoers
-# username    ALL=(ALL)       ALL
-
+username    ALL=(ALL)       ALL
+----------------------------------------------------------
 # vi /etc/sudoers.d/mynewuser
 # mynewuser   ALL=(ALL)       NOPASSWD: ALL
-chmod 440 /etc/sudoers.d/mynewuser
-
+# chmod 440 /etc/sudoers.d/mynewuser
+----------------------------------------------------------
 sudo apt install openssh-server
 systemctl enable sshd
 systemctl start sshd
 # sudo firewall-cmd --add-service=ssh --permanent && firewall-cmd --reload
-
-# Switchback to normal user and add public key to authorized_keys
+----------------------------------------------------------
+# Switchback to normal user and create .ssh folder & files
 cd ~
 mkdir .ssh
 cd .ssh
@@ -31,10 +31,10 @@ cd ~
 chmod go-w ~/
 chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
-
-# Restart machine, Switchback to existing working machine with SSH authorized_keys installed
+----------------------------------------------------------
+# Restart machine, Switchback to existing working machine with SSH authorized_keys installed add public key to authorized_keys
 ssh-copy-id -f user@hostname.domain.com
-
+----------------------------------------------------------
 # IMPORTANT -DISABLE SSH PASSWORDS - Only uses Public w/Private Keys for SSH. Local Console logins with passwords is still allowed.
 su - root
 cd /etc/ssh
@@ -43,19 +43,17 @@ PasswordAuthentication no
 PermitRootLogin no
 
 systemctl restart sshd
-
+----------------------------------------------------------
 # TO REMOVE OLD KEYS FROM known_hosts file
 ssh-keygen -f "/home/privacy/.ssh/known_hosts" -R "192.168.1.124"
-
 ----------------------------------------------------------
 #AGENT for Private Keys on Linux - MANUAL run ssh-agent and add ssh private key.
 eval "$(ssh-agent -s)"
 chmod 600 /c/Users/username/Documents/SETTINGS/id_rsa
 ssh-add /c/Users/username/Documents/SETTINGS/id_rsa
 ssh-add /directory/my_id_rsa
-
+----------------------------------------------------------
 # To create a systemd ssh-agent service, you need to create a file in ~/.config/systemd/user/ssh-agent.service because ssh-agent is user isolated.
-
 vi ~/.config/systemd/user/ssh-agent.service
     [Unit]
     Description=SSH key agent
@@ -77,14 +75,9 @@ systemctl --user enable --now ssh-agent
 # This will instruct the ssh client to always add the key to a running agent, so there's no need to ssh-add it beforehand. Note that when you create the ~/.ssh/config file you may need to run:
 
 chmod 600 ~/.ssh/config
-
 ---------------------------------------------------------
-
-
 # FOR WINDOWS - Add the ssh-agent as a auto-starting Service. KeyPassXC will add the private keys to the agent when it starts.
-
 https://github.com/PowerShell/Win32-OpenSSH/releases/tag/v9.1.0.0p1-Beta
-
 https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement#user-key-generation
 # Powershell install
 dism /online /Get-Capabilities /Format:Table | findstr -i ssh
@@ -101,9 +94,7 @@ Status   Name               DisplayName
 ------   ----               -----------
 Running  ssh-agent          OpenSSH Authentication Agent
 
-
 # List Keys in ssh-agent
-
 ssh-add -l
 ssh-add -L
 
