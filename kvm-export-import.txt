@@ -1,3 +1,7 @@
+virsh list --all
+virsh shutdown ns1.intensewebs.com
+virsh dumpxml ns1.intensewebs.com /home/iw/
+
 # EXAMPLE virsh dumpxml vm_name | less
 virsh dumpxml ubuntu20.04-clone | grep -i "source"
 virsh dumpxml ubuntu20.04-clone | grep -i "MEMORY"
