@@ -74,3 +74,18 @@ cat >> ~/.inputrc <<'EOF'
 EOF
 
 bind -f  ~/.inputrc
+---------------------------------------------
+# FEDORA fix broken packages
+sudo rpm -Va
+rpm --rebuilddb
+sudo dnf upgrade -b
+sudo dnf --refresh reinstall package_name
+sudo yum reinstall \*
+sudo yum update --skip-broken
+---------------------------------------------
+sudo modprobe zram
+sudo zramctl -s 128G -a zstd
+sudo mkfs.ext4 -N 33554432 -m 0 /dev/zram0
+sudo mount -o discard /dev/zram0 build/
+sudo chown -R myuser build/
+
