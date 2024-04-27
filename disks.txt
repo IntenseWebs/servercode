@@ -1,3 +1,4 @@
+# https://linuxconfig.org/linux-lvm-logical-volume-manager
 # apt-get install lvm2
 fdisk -l
 lsblk
@@ -13,6 +14,35 @@ hwinfo --short --block
 pvs
 vgs
 lvs
+sudo hdparm -t --direct /dev/nvme0n1p1
+
+# CREATE LVM VOLUME(s)
+pvcreate /dev/sdb
+vgcreate vg_extra /dev/sdb
+vgdisplay
+lvcreate vg_extra -L 400G -n vg-iso
+lvcreate vg_extra -L 500G -n vg-vm
+lvcreate vg_extra -L 900G -n vg-backups
+lvdisplay
+mkfs.ext4 -m 0 /dev/vg_extra/vg-iso
+mkfs.ext4 -m 0 /dev/vg_extra/vg-vm
+mkfs.ext4 -m 0 /dev/vg_extra/vg-backups
+mkdir /iso && mkdir /vm && mkdir /backups
+vi /etc/fstab
+/dev/vg_extra/vg-iso    /iso    ext4    defaults        0       0
+/dev/vg_extra/vg-vm     /vm     ext4    defaults        0       0
+/dev/vg_extra/vg-backups        /backups    ext4    defaults        0       0
+systemctl daemon-reload
+mount -a
+
+# REMOVE LVM VOLUME
+lvremove /dev/vg_extra/vg-backups
+
+# PARTITION ON CMD LINE
+lsblk
+umount /dev/sdb1
+# cfdisk /dev/sdb
+fdisk /dev/sdb # then p, g, n, w, q
 
 # RESIZE LVM AS ROOT: https://www.golinuxcloud.com/lvm-shrink-logical-volume/
 df -hT /home
@@ -27,6 +57,7 @@ mount /dev/mapper/pg--vg-home /home
 lvextend -L+4G /dev/mapper/zeus--vg-var
 # resize the ext4 filesystem in logical volume zeus-vg/var to the new volume size
 resize2fs /dev/mapper/zeus--vg-var
+# lvextend --resizefs -l +100%FREE /dev/mapper/vg_debian-lv_root
 
 #RESIZE ext4 - # unmount /home because an ext4 filesystem cannot be reduced while mounted
 umount /home
@@ -47,3 +78,15 @@ mkdir 1TBNVME
  vi /etc/fstab
 /dev/sda1       /media/2TBSEAGATE       ext4    defaults        0       2
 /dev/nvme1n1p1  /media/1TBNVME          ext4    defaults        0       2
+
+# CREATE NEW SNAPSHOT
+lvcreate /dev/mapper/<SOURCE VOLUMEGROUP NAME> -L 1G -s -n snapshot_name
+lvs
+# Mount a snapshot
+mount /dev/mapper/vg_extra-web_snapshot_20240624 /mnt/extra/snapshot
+# Restore a snapshot, Umount the original volume:
+umount /path/to/mounted/logical-volume
+lvconvert --merge /dev/mapper/snapshot_name
+# Deactivate/reactivate to fresh it:
+lvchange -an /dev/mapper/vg_extra-lv_web
+lvchange -ay /dev/mapper/vg_extra-lv_web
