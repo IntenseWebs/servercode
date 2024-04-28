@@ -1,28 +1,30 @@
 # https://linuxconfig.org/linux-lvm-logical-volume-manager
-# apt-get install lvm2
-fdisk -l
-lsblk
-lsblk -fe7
-blkid
-parted -l
-parted /dev/sde u s p
-df -hT
-du -sh /home
-# Check FREE SPACE
-sfdisk --list-free /dev/vda
-hwinfo --short --block
-pvs
-vgs
-lvs
-sudo hdparm -t --direct /dev/nvme0n1p1
+# apt-get install lvm2 # sudo dnf install lvm2
+# fdisk -l # lsblk # lsblk -fe7 # blkid # parted -l # parted /dev/sde u s p # df -hT # du -sh /home #
+# Check FREE SPACE # sfdisk --list-free /dev/vda # hwinfo --short --block # cat /proc/partitions # sudo hdparm -t --direct /dev/nvme0n1p1
+# pvs, vgs, lvs, pvdisplay, vgdisplay, lvdisplay
+
+# WIPE DESTROY DISK CONTENTS
+dd if=/dev/zero of=/dev/sdb  bs=512  count=1
+# shred -n 5 -vz /dev/sdb
+# scrub -p dod /dev/sdb
+
+# PARTITION ON CMD LINE
+# cfdisk /dev/sdb
+fdisk /dev/sdb # then m, p, g, n, w, q
 
 # CREATE LVM VOLUME(s)
-pvcreate /dev/sdb
-vgcreate vg_extra /dev/sdb
-vgdisplay
-lvcreate vg_extra -L 400G -n vg-iso
-lvcreate vg_extra -L 500G -n vg-vm
-lvcreate vg_extra -L 900G -n vg-backups
+pvcreate /dev/sdb1
+vgcreate vgiso /dev/sdb1
+lvcreate vgiso -l 100%FREE -n iso
+pvcreate /dev/sdb2
+vgcreate vgvm /dev/sdb2
+lvcreate vgvm -l 100%FREE -n vm
+pvcreate /dev/sdb3
+vgcreate vgbackups /dev/sdb3
+lvcreate vgbackups -l 100%FREE -n backups
+# lvcreate vgextra-vm -L 500G -n vg-vm vgextra
+# lvcreate vgextra-backups -L 900G -n vg-backups vgextra
 lvdisplay
 mkfs.ext4 -m 0 /dev/vg_extra/vg-iso
 mkfs.ext4 -m 0 /dev/vg_extra/vg-vm
@@ -36,13 +38,9 @@ systemctl daemon-reload
 mount -a
 
 # REMOVE LVM VOLUME
+pvremove /dev/sdb --force --force
+umount /dev/vg_extra/vg-backups
 lvremove /dev/vg_extra/vg-backups
-
-# PARTITION ON CMD LINE
-lsblk
-umount /dev/sdb1
-# cfdisk /dev/sdb
-fdisk /dev/sdb # then p, g, n, w, q
 
 # RESIZE LVM AS ROOT: https://www.golinuxcloud.com/lvm-shrink-logical-volume/
 df -hT /home
