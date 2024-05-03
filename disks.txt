@@ -5,6 +5,7 @@
 # pvs, vgs, lvs, pvdisplay, vgdisplay, lvdisplay
 
 # WIPE DESTROY DISK CONTENTS
+umount /dev/sdb1
 dd if=/dev/zero of=/dev/sdb  bs=512  count=1
 # shred -n 5 -vz /dev/sdb
 # scrub -p dod /dev/sdb
@@ -12,6 +13,13 @@ dd if=/dev/zero of=/dev/sdb  bs=512  count=1
 # PARTITION ON CMD LINE
 # cfdisk /dev/sdb
 fdisk /dev/sdb # then m, p, g, n, w, q
+Device          Start        End    Sectors  Size Type
+/dev/sdb1   419432448 1258293247  838860800  400G Linux filesystem
+/dev/sdb2  1258293248 2306869247 1048576000  500G Linux filesystem
+/dev/sdb3  2306869248 3907028991 1600159744  763G Linux filesystem
+mkfs.ext4 -L ISO /dev/sdb1
+mkfs.ext4 -L VM /dev/sdb2
+mkfs.ext4 -L BACKUPS /dev/sdb3
 
 # CREATE LVM VOLUME(s)
 pvcreate /dev/sdb1
@@ -26,14 +34,14 @@ lvcreate vgbackups -l 100%FREE -n backups
 # lvcreate vgextra-vm -L 500G -n vg-vm vgextra
 # lvcreate vgextra-backups -L 900G -n vg-backups vgextra
 lvdisplay
-mkfs.ext4 -m 0 /dev/vg_extra/vg-iso
-mkfs.ext4 -m 0 /dev/vg_extra/vg-vm
-mkfs.ext4 -m 0 /dev/vg_extra/vg-backups
-mkdir /iso && mkdir /vm && mkdir /backups
+mkfs.ext4 -m 0 /dev/vgiso/iso
+mkfs.ext4 -m 0 /dev/vgvm/vm
+mkfs.ext4 -m 0 /dev/vgbackups/backups
+mkdir /iso && mkdir /vm && mkdir /backupscd
 vi /etc/fstab
-/dev/vg_extra/vg-iso    /iso    ext4    defaults        0       0
-/dev/vg_extra/vg-vm     /vm     ext4    defaults        0       0
-/dev/vg_extra/vg-backups        /backups    ext4    defaults        0       0
+/dev/vgiso/iso    /iso    ext4    defaults        0       0
+/dev/vgvm/vm     /vm     ext4    defaults        0       0
+/dev/vgbackups/backups        /backups    ext4    defaults        0       0
 systemctl daemon-reload
 mount -a
 

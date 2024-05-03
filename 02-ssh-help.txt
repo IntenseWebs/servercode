@@ -18,6 +18,7 @@ username    ALL=(ALL)       ALL
 # chmod 440 /etc/sudoers.d/mynewuser
 ----------------------------------------------------------
 sudo apt install openssh-server
+# /etc/init.d/ssh restart
 systemctl enable sshd
 systemctl start sshd
 # sudo firewall-cmd --add-service=ssh --permanent && firewall-cmd --reload
