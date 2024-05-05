@@ -11,7 +11,7 @@ apt install sudo
 ----------------------------------------------------------
 # ADD username to /etc/sudoers right under root user
 vi /etc/sudoers
-username    ALL=(ALL)       ALL
+username    ALL=(ALL:ALL)       ALL
 ----------------------------------------------------------
 # vi /etc/sudoers.d/mynewuser
 # mynewuser   ALL=(ALL)       NOPASSWD: ALL
