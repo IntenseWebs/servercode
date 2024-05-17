@@ -1,0 +1,15 @@
+cd /usr/share/javascript/proxmox-widget-toolkit
+cp proxmoxlib.js proxmoxlib.js.bak
+nano proxmoxlib.js
+CTRL-W (find): if (res ==
+
+Hit return and this should take you to a line like this (backspace it out)
+if (res === null || res === undefined || !res || res
+                        .data.status.toLowerCase() !== 'active') {
+
+Replace the line with this
+if (false) {
+
+systemctl daemon-reload
+
+# UPDATE HOST > REPOSITORIES - DISABLE BOTH ENTERPRISE REPOSITORIES & ADD pve-no-subscription

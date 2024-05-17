@@ -1,7 +1,8 @@
 # https://linuxconfig.org/linux-lvm-logical-volume-manager
 # apt-get install lvm2 # sudo dnf install lvm2
-# fdisk -l # lsblk # lsblk -fe7 # blkid # parted -l # parted /dev/sde u s p # df -hT # du -sh /home #
-# Check FREE SPACE # sfdisk --list-free /dev/vda # hwinfo --short --block # cat /proc/partitions # sudo hdparm -t --direct /dev/nvme0n1p1
+# fdisk -l # lsblk # lsblk -fe7 # blkid # parted -l # parted /dev/sde u s p # df -hT # du -sh /home
+# Check FREE SPACE # sfdisk --list-free /dev/vda # hwinfo --short --block # cat /proc/partitions #
+# Check SPPED # sudo hdparm -t --direct /dev/nvme0n1p1
 # pvs, vgs, lvs, pvdisplay, vgdisplay, lvdisplay
 
 # WIPE DESTROY DISK CONTENTS
@@ -45,10 +46,13 @@ vi /etc/fstab
 systemctl daemon-reload
 mount -a
 
-# REMOVE LVM VOLUME
-pvremove /dev/sdb --force --force
-umount /dev/vg_extra/vg-backups
-lvremove /dev/vg_extra/vg-backups
+# REMOVE LVM VOLUME # df -hT # vi /etc/fstab
+umount /dev/vgiso/iso && umount /dev/vgvm/vm && umount /dev/vgbackups/backups
+lvchange -an /dev/vgiso/iso && lvchange -an /dev/vgvm/vm && lvchange -an /dev/vgbackups/backups
+lvremove /dev/vgiso/iso && lvremove /dev/vgvm/vm && lvremove /dev/vgbackups/backups
+lvscan
+vgremove vgiso && vgremove vgvm && vgremove vgbackups
+pvremove /dev/sdd1 --force --force && pvremove /dev/sdd2 --force --force && pvremove /dev/sdd3 --force --force
 
 # RESIZE LVM AS ROOT: https://www.golinuxcloud.com/lvm-shrink-logical-volume/
 df -hT /home
