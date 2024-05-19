@@ -1,3 +1,4 @@
+# https://devconnected.com/how-to-install-and-enable-ssh-server-on-debian-10/
 # ssh-keygen -t ed25519 -C "user@website.com"
 # ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C "john@example.com"
 # Generate OpenSSH Private Key id_rsa and Public Key id_rsa.pub (4096, 7680, 15360)

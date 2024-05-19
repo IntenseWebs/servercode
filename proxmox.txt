@@ -13,3 +13,12 @@ if (false) {
 systemctl daemon-reload
 
 # UPDATE HOST > REPOSITORIES - DISABLE BOTH ENTERPRISE REPOSITORIES & ADD pve-no-subscription
+
+# DISABLE ROOT SSH REMOTE LOGIN - see 02-ssh-help.txt
+
+# ENABLE INTEL IOMMU
+vi /etc/default/grub
+GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on"
+
+update-grub
+update-initramfs -u
