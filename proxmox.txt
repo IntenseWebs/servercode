@@ -16,9 +16,35 @@ systemctl daemon-reload
 
 # DISABLE ROOT SSH REMOTE LOGIN - see 02-ssh-help.txt
 
-# ENABLE INTEL IOMMU
+# DPDK requires hugepages. I reserved 4 * 1GB hugepages on the host. ENABLE INTEL IOMMU and Hugepages
 vi /etc/default/grub
-GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on"
+# GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on iommu=pt default_hugepagesz=1G hugepagesz=1G hugepages=4"
+
+I use the `vfio-pci` driver for DPDK, so SR-IOV should be enabled on the host. Other drivers like `igb_uio` or `uio_pci_generic` don't need this IOMMU. For more information about Linux drivers for DPDK, see https://doc.dpdk.org/guides/linux_gsg/linux_drivers.html.
+
+DPDK requires hugepages. I reserved 4 * 1GB hugepages on the host.
+
+- Make sure IOMMU and SR-IOV are enabled in BIOS.
+- Edit /etc/default/grub, on the line GRUB_CMDLINE_LINUX_DEFAULT, add `intel_iommu=on iommu=pt default_hugepagesz=1G hugepagesz=1G hugepages=4`.
+- Apply the change by running `grub-mkconfig -o /boot/grub/grub.cfg`.
 
 update-grub
 update-initramfs -u
+
+## Auto-load `vfio-pci` on boot
+
+Run `echo vfio-pci >> /etc/modules-load.d/modules.conf`.
+
+## Reboot and verification
+
+- After rebooting, check if IOMMU is functioning by reading driver message:
+```sh
+dmesg | grep -e DMAR -e IOMMU
+```
+
+- Check if hugepages are reserved:
+
+```sh
+apt install libhugetlbfs-bin
+hugeadm --explain
+```
