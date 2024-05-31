@@ -49,6 +49,11 @@ systemctl restart sshd
 # TO REMOVE OLD KEYS FROM known_hosts file
 ssh-keygen -f "/home/privacy/.ssh/known_hosts" -R "192.168.1.124"
 ----------------------------------------------------------
+# SHOW SHA-256 FINGERPRINT
+# You can use ssh-keygen. Convert file format first # ssh-keygen -i -m PKCS8 -f pubkey.pem > NEWpubkey.pem
+# Next get the fingerprint:ssh-keygen -lf NEWpubkey.pem
+# openssl rsa -in pubkey.pem -pubin -outform der | openssl dgst -sha256
+----------------------------------------------------------
 #AGENT for Private Keys on Linux - MANUAL run ssh-agent and add ssh private key.
 eval "$(ssh-agent -s)"
 chmod 600 /c/Users/username/Documents/SETTINGS/id_rsa
