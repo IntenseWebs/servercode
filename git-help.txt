@@ -33,6 +33,7 @@ git remote -v
 git push origin main:refs/heads/upload
 
 # ON MASTER
+su -git
 cd ~/Repos/servercode
 git merge upload
 
