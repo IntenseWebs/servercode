@@ -6,6 +6,8 @@ grep -e 'svm' /proc/cpuinfo
 lscpu | grep Virtualization
 lsmod | grep kvm
 
+# $ sudo dnf install qemu-kvm libvirt virt-install virt-viewer libvirt-nss
+
 sudo dnf install virt-install virt-viewer -y
 sudo dnf install libvirt -y
 sudo dnf install virt-manager -y
@@ -63,3 +65,10 @@ sudo virsh net-define /etc/libvirt/qemu/networkshost-bridge.xml
 sudo virsh net-autostart host-bridge
 virsh net-destroy default
 virsh net-undefine default
+
+$ virsh version
+$ virsh nodeinfo
+$ virsh uri
+
+# https://developers.redhat.com/articles/2024/12/18/rootless-virtual-machines-kvm-and-qemu#networking_with_session_vms
+# $ virt-install --name myvm --osinfo rhel9.4 --memory 2048 --vcpus 2 --disk size=20 --location ~/Downloads/rhel-9.4-x86_64-boot.iso

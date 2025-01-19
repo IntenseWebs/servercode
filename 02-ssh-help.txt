@@ -43,6 +43,8 @@ cd /etc/ssh
 vi /etc/ssh/sshd_config
 PasswordAuthentication no
 PermitRootLogin no
+[Socket]
+SocketProtocol=mptcp
 
 systemctl restart sshd
 ----------------------------------------------------------

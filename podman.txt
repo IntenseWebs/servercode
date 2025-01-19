@@ -1,0 +1,24 @@
+# Add alias docker=podman in your .bashrc
+podman -v
+sudo systemctl status podman.socket
+
+# Install:
+sudo dnf install podman
+sudo systemctl enable --now podman.socket
+
+---------------------------------------------
+sudo systemctl status cockpit.socket
+
+# Install Cockpit
+sudo dnf install cockpit cockpit-podman
+
+# Start Cockpit Socket
+sudo systemctl enable --now cockpit.socket
+
+# Open Firewall (if needed)
+sudo firewall-cmd --add-service=cockpit --permanent
+sudo firewall-cmd --add-service=cockpit
+
+
+# Run a test container
+podman run --rm busybox echo "hello world"
