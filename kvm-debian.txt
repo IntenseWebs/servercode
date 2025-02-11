@@ -21,6 +21,7 @@ sudo systemctl start libvirtd
 sudo systemctl enable --now libvirtd
 # ADD username to groups as your own user - NOT root
 sudo usermod -a -G libvirt,kvm $USER
+# sudo usermod -aG libvirt $(whoami) && sudo usermod -aG kvm $(whoami)
 sudo reboot
 
 **WARNING** Be on server as root. nmtui for graphical. RECOMMENDED using nmtui

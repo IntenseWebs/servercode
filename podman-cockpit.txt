@@ -2,10 +2,13 @@
 podman -v
 sudo systemctl status podman.socket
 
-# Install:
+# Install Fedora:
 sudo dnf install podman
 sudo systemctl enable --now podman.socket
 
+# Install Debian:
+sudo apt install podman -y
+sudo systemctl enable --now podman.socket
 ---------------------------------------------
 sudo systemctl status cockpit.socket
 
