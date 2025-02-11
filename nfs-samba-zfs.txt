@@ -1,0 +1,6 @@
+Samba (SMB support): apt install samba -y
+NFS Server (NFS support): apt install nfs-kernel-server -y
+# Virtualization tools (KVM/QEMU): apt install qemu-kvm virt-manager libvirt-clients bridge-utils libvirt-daemon-system virtinst -y
+# Containerization (Podman): apt install podman -y
+ZFS Utilities: apt install zfsutils-linux -y
+# Hardware Monitoring: apt install lm-sensors -y
