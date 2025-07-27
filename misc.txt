@@ -2,7 +2,15 @@
 # OPEN SOURCE BENCHMARKS
 speccpu, netperf, memtier_benchmark, aerospike, hpcc
 
+sudo apt purge apport apport-gtk apport-retrace apport-symptoms
+
 inxi -Fxxc0 | nc termbin.com 9999
+
+sudo dnf environment list --available | grep desktop
+
+sudo dnf install switchdesk switchdesk-gui
+
+# sudo dnf install @kde-desktop-environment
 
 dnf grouplist -v
 dnf groupinstall "Fedora Workstation"
@@ -89,3 +97,37 @@ sudo mkfs.ext4 -N 33554432 -m 0 /dev/zram0
 sudo mount -o discard /dev/zram0 build/
 sudo chown -R myuser build/
 
+---------------------------------------------
+Recover the Root Password
+
+If you need to recover credentials, use this method to gaining access to the instance.
+
+    Reboot the system.
+
+    Interrupt the grub2 menu by pressing "e" to edit when prompted with the grub menu.
+
+    Move the cursor to the end of the line that specifies the kernel (vmlinuz). You may want to remove all other consoles other than TTY0, however, this step may not be necessary for your environment.
+
+    Append rd.break (no quotes), which will break the boot process just before the control is handed from initramfs to the actual system.
+
+    Ctrl+x to boot.
+
+A root shell is presented with the root filesystem mounted in read-only mode on /sysroot.
+
+Remount it with write privileges as /sysroot.
+
+# mount -oremount,rw /sysroot
+
+Switch to a chroot jail.
+
+# chroot /sysroot
+
+Change the password for the desired user.
+
+# passwd example-username
+
+If you use SELinux, you should consider re-labeling all files before continuing the boot process. Skip this part if you don't use SELinux.
+
+# touch /.autorelabel
+
+Use the exit to exit the chroot jail. Use exit a second time, and the system will cleanly boot from the point we interrupted it.

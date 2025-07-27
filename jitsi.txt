@@ -1,0 +1,24 @@
+https://wiki.opensourceisawesome.com/books/jitsi-meet/page/jitsi-meet-with-authentication
+
+curl https://get.docker.com ! sh
+usermod -aG docker myusername # replace myusername with yours
+# exit & log back in
+docker ps
+
+mkdir -p docker/jitsi
+cd docker/jitsi
+wget $(curl -s https://api.github.com/repos/jitsi/docker-jitsi-meet/releases/latest | grep 'zip' | cut -d\" -f4)
+sudo apt install unzip
+mv jitsi-docker-jitsi-meet-aae3756 jitsi-meet
+cd jitsi-meet
+
+# Copy Docker Compose and Environment Files
+# We'll make copies of two of the files to work from. First, let's copy the 'env.example' file to a new hidden file called '.env'. This is the file docker compose uses by default for configurations.
+
+cp env.example .env
+
+Next, let's copy the docker-compose.yml file to a new file called 'compose.yaml' (this is the newer naming convention used by Docker Compose). Then we'll rename the original file by adding a '.bak' extension to the end, so Docker Compose will default to our 'compose.yaml' file.
+
+cp docker-compose.yml compose.yaml
+
+'mv docker-compose.yml docker-compose.yml.bak'

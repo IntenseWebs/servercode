@@ -1,6 +1,10 @@
 #FEDORA - ADD GRAPHICAL FOR VNC XRDP HEADLESS SERVER
 sudo dnf group install "Server with GUI"
 sudo systemctl set-default graphical.target
+sudo dnf install epel-release -y
+dnf update
+dnf install yum-utils
+
 sudo systemctl reboot
 sudo dnf install -y xrdp tigervnc-server
 # sudo apt install xrdp tigervnc-standalone-server
@@ -41,15 +45,16 @@ geometry=1920x1080
 nolisten=tcp
 localhost
 
--------------------------------------
-restorecon -RFv ~/.vnc
-[root]# rm /etc/systemd/system/vncserver@.service
-
 sudo systemctl daemon-reload
 sudo systemctl enable --now vncserver@:1.service
 sudo systemctl enable --now vncserver@:2.service
 sudo systemctl status vncserver@:1.service
 sudo systemctl status vncserver@:2.service
+
+-------------------------------------
+restorecon -RFv ~/.vnc
+[root]# rm /etc/systemd/system/vncserver@.service
+-------------------------------------
 
 # VNC OVER SSH - EXIT BACK TO CLIENT MACHINE
 ssh -L 5901:localhost:5901 iw@192.168.1.121

@@ -1,23 +1,21 @@
 # https://linuxconfig.org/linux-lvm-logical-volume-manager
 # apt-get install lvm2 # sudo dnf install lvm2
 # fdisk -l
-# lsblk
-# lsblk -fe7
+# lsblk # lsblk -fe7 # lsblk -o NAME,FSTYPE,LABEL,MOUNTPOINT,SIZE,MODEL
 # blkid
-# parted -l
-# parted /dev/sde u s p
-# df -hT
-# du -sh /home
+# parted -l # parted /dev/sde u s p
+# df -hT # df -TH
+# du -sh /home # du -h /var | sort -hr | head -n10
 # Check FREE SPACE # sfdisk --list-free /dev/vda # hwinfo --short --block # cat /proc/partitions #
 # Check SPEED # sudo hdparm -t --direct /dev/nvme0n1p1
 # pvs, vgs, lvs, pvdisplay, vgdisplay, lvdisplay
-
+----------------------------------------------------------
 # WIPE DESTROY DISK CONTENTS
 # shred -n 5 -vz /dev/sdb
 # scrub -p dod /dev/sdb
 umount /dev/vgiso/iso && umount /dev/vgvm/vm && umount /dev/vgbackups/backups
 dd if=/dev/zero of=/dev/sdb  bs=512  count=1
-
+----------------------------------------------------------
 # PARTITION ON CMD LINE
 # cfdisk /dev/sdb
 fdisk /dev/sdb # then m, p, g, n, w, q
@@ -28,7 +26,7 @@ Device          Start        End    Sectors  Size Type
 mkfs.ext4 -L VM /dev/sdb1
 mkfs.ext4 -L ISO /dev/sdb2
 mkfs.ext4 -L BACKUPS /dev/sdb3
-
+----------------------------------------------------------
 # CREATE LVM VOLUME(s)
 pvcreate /dev/sdb1
 vgcreate vgvm /dev/sdb1
@@ -52,7 +50,7 @@ vi /etc/fstab
 /dev/vgbackups/backups        /backups    ext4    defaults        0       0
 systemctl daemon-reload
 mount -a
-
+----------------------------------------------------------
 # REMOVE LVM VOLUME # df -hT # vi /etc/fstab
 umount /dev/vgiso/iso && umount /dev/vgvm/vm && umount /dev/vgbackups/backups
 lvchange -an /dev/vgiso/iso && lvchange -an /dev/vgvm/vm && lvchange -an /dev/vgbackups/backups
@@ -60,7 +58,7 @@ lvremove /dev/vgiso/iso && lvremove /dev/vgvm/vm && lvremove /dev/vgbackups/back
 lvscan
 vgremove vgiso && vgremove vgvm && vgremove vgbackups
 pvremove /dev/sdd1 --force --force && pvremove /dev/sdd2 --force --force && pvremove /dev/sdd3 --force --force
-
+----------------------------------------------------------
 # RESIZE LVM AS ROOT: https://www.golinuxcloud.com/lvm-shrink-logical-volume/
 df -hT /home
 lsblk -f
@@ -75,7 +73,40 @@ lvextend -L+4G /dev/mapper/zeus--vg-var
 # resize the ext4 filesystem in logical volume zeus-vg/var to the new volume size
 resize2fs /dev/mapper/zeus--vg-var
 # lvextend --resizefs -l +100%FREE /dev/mapper/vg_debian-lv_root
+----------------------------------------------------------
+# SHRINK REDUCE LVM GROUP AS ROOT:https://unix.stackexchange.com/questions/67702/how-to-reduce-volume-group-size-in-lvm
+# https://www.rootusers.com/lvm-resize-how-to-decrease-an-lvm-partition/
+sudo lvresize --verbose --resizefs -L -150G /dev/ubuntu/root
+sudo pvresize --setphysicalvolumesize {any size here} /dev/sda5
 
+# The last command, pvresize, may yield the error
+# /dev/sda5: cannot resize to xxxxx extents as later ones are allocated.
+# You have to rearrange the unallocated space at the end of the LVM. That means after root and swap_1 partition. You can see the current arrangement of space with this command
+
+pvs -v --segments /dev/sda5
+pvs -v --segments /dev/nvme0n1p3
+
+pvs will show output like this
+
+/dev/sda5 ubuntu lvm2 a-- 698.04g 150g 0 xxx+1 root 0 linear /dev/sda:0-xxx
+/dev/sda5 ubuntu lvm2 a-- 698.04g 150g xxx+1 iii 0 free
+/dev/sda5 ubuntu lvm2 a-- 698.04g 150g yyyy jjj swap 0 linear /dev/sda5:yyyy-end
+
+Now use pvmove to remove external fragmentation:
+
+sudo pvmove --alloc anywhere /dev/sda5:yyyy-end
+
+pvs -v --segments /dev/sda5
+
+should show the new order of volumes:
+
+/dev/sda5 ubuntu lvm2 a-- 698.04g 150g 0 xxx+1 root 0 linear /dev/sda:0-xxx
+/dev/sda5 ubuntu lvm2 a-- 698.04g 150g xxx+1 iii swap 0 linear /dev/sda5:xxx+1-yyyy
+/dev/sda5 ubuntu lvm2 a-- 698.04g 150g yyyy+1 end 0 free
+pvs -v --segments /dev/nvme0n1p3
+
+After that, use GParted and resize the LVM to the maximum used area. The rest will be in unallocated space.
+----------------------------------------------------------
 #RESIZE ext4 - # unmount /home because an ext4 filesystem cannot be reduced while mounted
 umount /home
 fsck -f /dev/mapper/zeus--vg-home
@@ -95,7 +126,7 @@ mkdir 1TBNVME
  vi /etc/fstab
 /dev/sda1       /media/2TBSEAGATE       ext4    defaults        0       2
 /dev/nvme1n1p1  /media/1TBNVME          ext4    defaults        0       2
-
+----------------------------------------------------------
 # CREATE NEW SNAPSHOT
 lvcreate /dev/mapper/<SOURCE VOLUMEGROUP NAME> -L 1G -s -n snapshot_name
 lvs
