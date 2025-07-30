@@ -11,7 +11,7 @@ lsmod | grep kvm
 sudo dnf install virt-install virt-viewer -y
 sudo dnf install libvirt -y
 sudo dnf install virt-manager -y
-#Almalinux10, RHEL 10, Rocky 10# dnf --enablerepo=crb install virt-manager
+#Almalinux10, RHEL 10, Rocky 10 # dnf --enablerepo=crb install virt-manager
 sudo dnf install -y virt-top libguestfs-tools -y
 sudo systemctl start libvirtd
 sudo systemctl enable --now libvirtd
