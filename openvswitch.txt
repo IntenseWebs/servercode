@@ -1,7 +1,8 @@
 # Install DEPENDENCIES: Fedora 42 RHEL 10, Rocky 10, Almalinux 10
-
 https://docs.openvswitch.org/en/latest/intro/install/general/
 https://cloudspinx.com/build-open-vswitch-from-source-on-rocky-almalinux-rhel/
+https://micro-grid.github.io/swtch/apt/
+_____________________________________________________________________________
 
 # For RHEL 10/Rocky 10, Almalinux 10/Fedora systems these can be installed using dnf groupinstall "Development Tools"
 # For Debian systems these can be installed using apt install build-essential
@@ -23,8 +24,6 @@ dnf install python3-sphinx python3-devel libxdp-devel \
     unbound unbound-devel sparse
 _____________________________________________________________________________
 # Install DPDK - Download: Fedora 42
-
-https://docs.openvswitch.org/en/latest/topics/dpdk/vhost-user/
 https://docs.openvswitch.org/en/latest/topics/dpdk/vhost-user/
 
 su - root
@@ -42,7 +41,6 @@ ldconfig
 
 pkg-config --modversion libdpdk
 # ONLY IF NEEDED # export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
-
 _____________________________________________________________________________
 # Install OVS from Git - Clone Repository: Fedora 42
 https://docs.openvswitch.org/en/latest/intro/install/dpdk/
@@ -58,6 +56,7 @@ git checkout v3.5.0
 ./boot.sh
 ./configure --with-dpdk=static
 make
+# make rpm-fedora RPMBUILD_OPT="--with dpdk --without check"
 echo 'vm.nr_hugepages=2048' > /etc/sysctl.d/hugepages.conf
 mount -t hugetlbfs none /dev/hugepages
 
@@ -75,13 +74,43 @@ modprobe vfio-pci
 /usr/bin/chmod a+x /dev/vfio
 /usr/bin/chmod 0666 /dev/vfio/*
 export DPDK_DIR=/usr/src/dpdk-stable-24.11.2
+##### CLARIFATION NEEDED #####
 $DPDK_DIR/usertools/dpdk-devbind.py --bind=vfio-pci eth1
 $DPDK_DIR/usertools/dpdk-devbind.py --status
 
+ovs-vsctl get Open_vSwitch . dpdk_initialized
 
+# SETUP OVS
 
+export PATH=$PATH:/usr/local/share/openvswitch/scripts
+export DB_SOCK=/usr/local/var/run/openvswitch/db.sock
+##### CLARIFATION NEEDED #####
+ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=true
+ovs-ctl --no-ovsdb-server --db-sock="$DB_SOCK" start
+# ovs-vsctl --no-wait set Open_vSwitch . \
+    other_config:dpdk-socket-mem="2048"
+##### END CLARIFATION NEEDED #####
+
+make install
+
+#VALIDATING
+
+ovs-vsctl get Open_vSwitch . dpdk_initialized
+ovs-vsctl status
+ovs-vswitchd --version
+ovs-vsctl show
+
+##### CLARIFATION NEEDED #####
+ovs-vsctl add-br br0 -- set bridge br0 datapath_type=netdev
+ovs-vsctl add-port br0 myportnameone -- set Interface myportnameone \
+    type=dpdk options:dpdk-devargs=0000:06:00.0
+ovs-vsctl add-port br0 myportnametwo -- set Interface myportnametwo \
+    type=dpdk options:dpdk-devargs=0000:06:00.1
+
+virsh edit VM
+virsh list --all # virsh start VM #
 _____________________________________________________________________________
-
+##### CLARIFATION NEEDED #####
 # Install from Git - Clone Repository: Fedora 42 & Bash, /usr/local/etc/openvswitch /usr/local/var
 su - root
 cd/usr/src
@@ -101,34 +130,12 @@ ovs-vsctl show
 
 cd rpm/rpmbuild/RPMS/x86_64
 ls -al
-
 _____________________________________________________________________________
-
-
+##### CLARIFATION NEEDED #####
 sudo systemctl enable --now openvswitch
 systemctl status openvswitch.service
-● openvswitch.service - Open vSwitch
-   Loaded: loaded (/usr/lib/systemd/system/openvswitch.service; enabled; vendor preset: disabled)
-   Active: active (exited) since Wed 2025-04-16 00:17:18 EAT; 5s ago
-  Process: 93926 ExecStart=/bin/true (code=exited, status=0/SUCCESS)
- Main PID: 93926 (code=exited, status=0/SUCCESS)
-
-Apr 16 00:17:18 rocky01.cloudspinx.com systemd[1]: Starting Open vSwitch...
-Apr 16 00:17:18 rocky01.cloudspinx.com systemd[1]: Started Open vSwitch.
-
-The command above will start other OVS services:
-
 systemctl status ovs-vswitchd ovsdb-server
-
-Log out of your current shell session, then log back in:
-
-logout
-
-Run the ovs-vsctl show command to verify the Open vSwitch (OVS) version:
-
-$ ovs-vsctl show
-8d2d42ed-88e7-45bc-b2d2-eb43e25763b1
-    ovs_version: "3.5.0-1.el8"
+ovs-vsctl show
 # Kernel Compatibility: Ensure kernel-devel matches your running kernel (uname -r). If mismatched, update the kernel or install the correct kernel-devel package.
 # DPDK (Optional): For high-performance setups, install dpdk and dpdk-devel, then add --with-dpdk to ./configure.
 # Troubleshooting: Check logs in /var/log/openvswitch/ if services fail to start. Ensure the user has permissions (e.g., sudo usermod -aG openvswitch $USER).
