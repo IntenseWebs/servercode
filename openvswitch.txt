@@ -23,7 +23,7 @@ dnf install python3-sphinx python3-devel libxdp-devel \
     numactl-devel selinux-policy-devel systemtap-sdt-devel \
     unbound unbound-devel sparse
 _____________________________________________________________________________
-# Install DPDK - Download: Fedora 42
+# Install DPDK vhost-user-client - Download on Fedora 42
 https://docs.openvswitch.org/en/latest/topics/dpdk/vhost-user/
 
 su - root
