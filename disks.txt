@@ -116,16 +116,19 @@ lvreduce -L50G /dev/mapper/zeus--vg-home
 # remount /home
 mount /home
 
-# MOUNT OTHER DRIVES
-cd/media
-mkdir 2TBSEAGATE
-mkdir 1TBNVME
- cd /etc
- mkdir backup
- cp /etc/fstab /etc/backup/fstab
- vi /etc/fstab
-/dev/sda1       /media/2TBSEAGATE       ext4    defaults        0       2
-/dev/nvme1n1p1  /media/1TBNVME          ext4    defaults        0       2
+# MOUNT OTHER DRIVES - GET UUID by blkid & Edit /etc/fstab
+UUID=24e22f8f-5218-4c1c-bb44-970c0a7723fa       /2TBSEAGATE     ext4    defaults        0       2
+UUID=6e291f1f-9640-420a-8fdc-6468459bcf8d       /1TBNVME        ext4    defaults        0       2
+
+# cd/media
+# mkdir 2TBSEAGATE
+# mkdir 1TBNVME
+# cd /etc
+# mkdir backup
+# cp /etc/fstab /etc/backup/fstab
+# vi /etc/fstab
+# /dev/sda1       /media/2TBSEAGATE       ext4    defaults        0       2
+# /dev/nvme1n1p1  /media/1TBNVME          ext4    defaults        0       2
 ----------------------------------------------------------
 # CREATE NEW SNAPSHOT
 lvcreate /dev/mapper/<SOURCE VOLUMEGROUP NAME> -L 1G -s -n snapshot_name
