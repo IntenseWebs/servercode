@@ -1,39 +1,16 @@
-https://linuxways.net/debian/how-to-install-kvm-on-debian-12/
-
-# Checks Intel
-grep -e 'vmx' /proc/cpuinfo
-# Checks AMD-V
-grep -e 'svm' /proc/cpuinfo
-# Check both Intel and AMD
-grep -E --color=auto 'vmx|svm|0xc0f' /proc/cpuinfo
-lscpu | grep Virtualization
-lsmod | grep kvm
-sudo modprobe vhost_net
-lsmod | grep vhost
-cat /sys/module/kvm_amd/parameters/nested
-
-Debian /usr/bin/qemu-system-x86_64
-Almalinux /usr/libexec/qemu-kvm
-
-sudo apt install libvirt-daemon-system qemu-kvm qemu-system libvirt-clients bridge-utils libguestfs-tools genisoimage virtinst libosinfo-bin virt-viewer -y
-sudo apt install virt-manager -y
-sudo systemctl start libvirtd
-sudo systemctl enable --now libvirtd
-# ADD username to groups as your own user - NOT root
-sudo usermod -a -G libvirt,kvm $USER
-# sudo usermod -aG libvirt $(whoami) && sudo usermod -aG kvm $(whoami)
-sudo reboot
-
 **WARNING** Be on server as root. nmtui for graphical. RECOMMENDED using nmtui
-sudo virsh net-list --all
-# sudo virsh net-start host-bridge
-# sudo virsh net-autostart host-bridge
-sudo modprobe vhost_net
-sudo vi /etc/modules
-# Add vhost_net
+virsh net-list --all
+virsh net-edit default
+ip link show type bridge
+ip link show master br0
+
+sudo ip link add br0 type bridge
+sudo ip link set enp4so up
+sudo ip link set enp4s0 master br0
+sudo ip address add dev br0 192.168.1.121/24
 
 ______________________________________________________________________________
-#Be on server as root. nmtui for graphical. RECOMMENDED using nmtui - see kvm-bridge-nmtui.pdf
+# Be on server as root. nmtui for graphical. RECOMMENDED using nmtui - see kvm-bridge-nmtui.pdf
 sudo vi /etc/libvirt/qemu/networks/host-bridge.xml
 #Add the following lines:
 <network>
@@ -59,7 +36,13 @@ sudo vi /etc/udev/rules.d/99-bridge.rules
 ACTION=="add", SUBSYSTEM=="module", KERNEL=="br_netfilter", RUN+="/sbin/sysctl -p /etc/sysctl.d/bridge.conf"
 # REBOOT SYSTEM
 
-----------------------------------------------------------------------
+# sudo virsh net-start host-bridge
+# sudo virsh net-autostart host-bridge
+sudo modprobe vhost_net
+sudo vi /etc/modules
+# Add vhost_net
+
+______________________________________________________________________________
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index#proc_configuring-a-network-bridge-by-using-nmtui_configuring-a-network-bridge
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index#configuring-a-network-bridge-by-using-nm-connection-editor_configuring-a-network-bridge
 https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html-single/configuring_and_managing_networking/index#proc_configuring-a-network-bridge-by-using-nmstatectl_configuring-a-network-bridge
@@ -80,4 +63,3 @@ nmcli con mod br0 bridge.stp no
 service NetworkManager restart
 nmcli device show
 nmcli -f bridge con show br0
-

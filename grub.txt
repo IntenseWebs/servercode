@@ -4,6 +4,8 @@ vi /etc/default/grub
 # UNCOMMENT this line as such.
 GRUB_DISABLE_OS_PROBER="false"
 
+------------------ grub-customizer tool
+
 # FIND DRIVE UUID THAT HAS WINDOWS "ntfs"
 
 blkid
@@ -18,7 +20,7 @@ blkid
 
 sudo apt install grub-customizer
 
-# EXAMPLE 1 - ADDING WINDOWS TO GRUB  ENTRY
+# EXAMPLE 1 - ADDING WINDOWS TO GRUB  ENTRY - grub-customizer tool
 Name: Windows 10 Pro Boot Manager (on /dev/sdb1)
 Type: Other
 
@@ -34,22 +36,29 @@ parttool ${root} hidden-
 drivemap -s (hd0) ${root}
 chainloader +1
 
-# EXAMPLE 2
+# EXAMPLE 2- grub-customizer tool (PREFERRED FOR WINDOWS)
+
+blkid
+
+/dev/nvme0n1p1: UUID="C2E8-153E" BLOCK_SIZE="512" TYPE="vfat" PARTLABEL="EFI System Partition" PARTUUID="f5ff6c4f-2e06-41af-a6e9-7fa9e89b374c"
+/dev/nvme0n1p2: UUID="08b1a00b-5ef2-4bcc-b961-c3cd03fb18eb" BLOCK_SIZE="4096" TYPE="ext4" PARTUUID="1c14e795-7b4e-4ba9-9bd6-7bcb4243b890"
+/dev/nvme0n1p3: UUID="X2KznA-F6vs-cdDx-XtG2-43Lf-xl63-T93nVf" TYPE="LVM2_member" PARTUUID="43527f65-3b99-4648-a525-ea8385cad659"
+/dev/nvme0n1p4: UUID="27f514ba-37de-4d06-8766-83158994ce5b" BLOCK_SIZE="4096" TYPE="ext4" PARTUUID="45f35f65-c072-4d6e-987b-66d693276b93"
+/dev/nvme0n1p6: BLOCK_SIZE="512" UUID="AEDA6CECDA6CB1EF" TYPE="ntfs" PARTLABEL="Basic data partition" PARTUUID="214878f3-025d-44b9-a30d-3ceaedb4323e"
+/dev/nvme0n1p7: BLOCK_SIZE="512" UUID="089686E59686D29C" TYPE="ntfs" PARTUUID="9166fab8-9063-4d00-a2a5-0bf0e2eddffb"
+/dev/nvme1n1: LABEL="1TBNVME" UUID="6e291f1f-9640-420a-8fdc-6468459bcf8d" BLOCK_SIZE="4096" TYPE="ext4"
+/dev/sda1: LABEL="2TBSEAGATE" UUID="24e22f8f-5218-4c1c-bb44-970c0a7723fa" BLOCK_SIZE="4096" TYPE="ext4" PARTUUID="00033eb0-01"
+/dev/sdb1: BLOCK_SIZE="2048" UUID="2026-05-24-15-14-36-00" LABEL="MX-Live" TYPE="iso9660" PTUUID="26cd1e85" PTTYPE="dos" PARTUUID="26cd1e85-01"
+/dev/sdb2: SEC_TYPE="msdos" UUID="9300-879C" BLOCK_SIZE="512" TYPE="vfat" PARTUUID="26cd1e85-02"
+/dev/mapper/sd--vg-root: UUID="346b83de-4c8d-476a-a4f0-0804d2715348" BLOCK_SIZE="4096" TYPE="ext4"
+/dev/nvme0n1p5: PARTLABEL="Microsoft reserved partition" PARTUUID="a53ec058-2834-4597-b086-73b03db6eba8"
+
 Name: Windows 10 Pro Boot Manager (on /dev/nvme0n1p1)
 Type: Other
 
 insmod part_gpt
 insmod fat
-search --no-floppy --fs-uuid --set=root BAE6-96B7
-chainloader /EFI/Microsoft/Boot/bootmgfw.efi
-
-# EXAMPLE 3
-Name: Windows 10 Pro Boot Manager (on /dev/nvme0n1p1)
-Type: Other
-
-insmod part_gpt
-insmod fat
-search --no-floppy --fs-uuid --set=root EFC8-2865
+search --no-floppy --fs-uuid --set=root C2E8-153E
 chainloader /EFI/Microsoft/Boot/bootmgfw.efi
 
 _______________________________________________________________________

@@ -54,7 +54,7 @@ nmcli device show
 nmcli -f bridge con show br0
 
 # Create file
-sudo vi /etc/libvirt/qemu/networkshost-bridge.xml
+sudo vi /etc/libvirt/qemu/networks/host-bridge.xml
 #Add the following lines:
 <network>
   <name>host-bridge</name>
@@ -62,7 +62,7 @@ sudo vi /etc/libvirt/qemu/networkshost-bridge.xml
   <bridge name="br0"/>
 </network>
 #Run the following commands to start the newly created bridge and make it as default bridge for VMs:
-sudo virsh net-define /etc/libvirt/qemu/networkshost-bridge.xml
+sudo virsh net-define /etc/libvirt/qemu/networks/host-bridge.xml
 sudo virsh net-autostart host-bridge
 virsh net-destroy default
 virsh net-undefine default

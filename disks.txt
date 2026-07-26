@@ -13,8 +13,8 @@
 # WIPE DESTROY DISK CONTENTS
 # shred -n 5 -vz /dev/sdb
 # scrub -p dod /dev/sdb
-umount /dev/vgiso/iso && umount /dev/vgvm/vm && umount /dev/vgbackups/backups
-dd if=/dev/zero of=/dev/sdb  bs=512  count=1
+# umount /dev/vgiso/iso && umount /dev/vgvm/vm && umount /dev/vgbackups/backups
+# dd if=/dev/zero of=/dev/sdb  bs=512  count=1
 ----------------------------------------------------------
 # PARTITION ON CMD LINE
 # cfdisk /dev/sdb
