@@ -1,10 +1,13 @@
-﻿# IN UEFI BIOS, change bootloader to Debian drive so it will boot debian.
-su – root
-vi /etc/default/grub
-# UNCOMMENT this line as such.
-GRUB_DISABLE_OS_PROBER="false"
+﻿# Backup and Restore GRUB Configuration to Prevent Boot Issues: https://gist.github.com/michele-tn/306de7684deac6aa2dd5719707cc0041
 
------------------- grub-customizer tool
+# IN UEFI BIOS, change bootloader to Debian drive so it will boot debian.
+# su – root
+# vi /etc/default/grub
+# UNCOMMENT this line as such.
+# GRUB_DISABLE_OS_PROBER="false"
+
+# grub-customizer tool
+sudo apt install grub-customizer
 
 # FIND DRIVE UUID THAT HAS WINDOWS "ntfs"
 
@@ -18,25 +21,8 @@ blkid
 /dev/sda5: UUID="9xmigV-MtN3-tC0m-FjuC-He9P-MEGg-Fr4KLd" TYPE="LVM2_member" PARTUUID="928bac7e-05"
 /dev/sda1: UUID="49a1c3fa-1bd5-489d-82d9-b2c6ce6f45e2" BLOCK_SIZE="1024" TYPE="ext2" PARTUUID="928bac7e-01"
 
-sudo apt install grub-customizer
 
-# EXAMPLE 1 - ADDING WINDOWS TO GRUB  ENTRY - grub-customizer tool
-Name: Windows 10 Pro Boot Manager (on /dev/sdb1)
-Type: Other
-
-insmod part_msdos
-insmod ntfs
-set root='hd0,msdos1'
-if [ x$feature_platform_search_hint = xy ]; then
-  search --no-floppy --fs-uuid --set=root --hint-bios=hd0,msdos1 --hint-efi=hd0,msdos1 --hint-baremetal=ahci0,msdos1  76D4AFBCD4AF7CCD
-else
-  search --no-floppy --fs-uuid --set=root 76D4AFBCD4AF7CCD
-fi
-parttool ${root} hidden-
-drivemap -s (hd0) ${root}
-chainloader +1
-
-# EXAMPLE 2- grub-customizer tool (PREFERRED FOR WINDOWS)
+# EXAMPLE 1- grub-customizer tool (PREFERRED CHOICE FOR WINDOWS)
 
 blkid
 
@@ -61,7 +47,42 @@ insmod fat
 search --no-floppy --fs-uuid --set=root C2E8-153E
 chainloader /EFI/Microsoft/Boot/bootmgfw.efi
 
+
+# EXAMPLE 2 - ADDING WINDOWS TO GRUB  ENTRY - grub-customizer tool
+Name: Windows 10 Pro Boot Manager (on /dev/sdb1)
+Type: Other
+
+insmod part_msdos
+insmod ntfs
+set root='hd0,msdos1'
+if [ x$feature_platform_search_hint = xy ]; then
+  search --no-floppy --fs-uuid --set=root --hint-bios=hd0,msdos1 --hint-efi=hd0,msdos1 --hint-baremetal=ahci0,msdos1  76D4AFBCD4AF7CCD
+else
+  search --no-floppy --fs-uuid --set=root 76D4AFBCD4AF7CCD
+fi
+parttool ${root} hidden-
+drivemap -s (hd0) ${root}
+chainloader +1
+
+
+# EXAMPLE 3 - DEBIAN
+
+Name: Debian GNU/Linux
+Type: Other
+
+load_video
+insmod gzio
+if [ x$grub_platform = xxen ]; then insmod xzio; insmod lzopio; fi
+insmod part_gpt
+insmod ext2
+search --no-floppy --fs-uuid --set=root 08b1a00b-5ef2-4bcc-b961-c3cd03fb18eb
+echo	'Loading Linux 6.12.96+deb13-amd64 ...'
+linux	/vmlinuz-6.12.96+deb13-amd64 root=/dev/mapper/sd--vg-root ro  quiet
+echo	'Loading initial ramdisk ...'
+initrd	/initrd.img-6.12.96+deb13-amd64
+
 _______________________________________________________________________
+
 sudo apt-get update
 sudo apt-get install --reinstall grub
 sudo apt-get dist-upgrade
