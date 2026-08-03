@@ -1,7 +1,7 @@
 ﻿# Backup and Restore GRUB Configuration to Prevent Boot Issues: https://gist.github.com/michele-tn/306de7684deac6aa2dd5719707cc0041
 # https://www.debian.org/doc/manuals/debian-reference/ch03.en.html
 # IN UEFI BIOS, change bootloader to Debian drive so it will boot debian.
-# su – root
+# su - root
 # vi /etc/default/grub
 # UNCOMMENT this line as such.
 # GRUB_DISABLE_OS_PROBER="false"
