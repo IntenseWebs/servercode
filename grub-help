@@ -83,6 +83,10 @@ initrd	/initrd.img-6.12.96+deb13-amd64
 
 # EXAMPLE 4 - MXLinux
 
+Name: MXLinux
+Type: Other
+
+
 load_video
 insmod gzio
 if [ x$grub_platform = xxen ]; then insmod xzio; insmod lzopio; fi
@@ -93,6 +97,7 @@ echo	'Loading Linux 7.1.5-2-liquorix-amd64 ...'
 linux	/vmlinuz-7.1.5-2-liquorix-amd64 root=UUID=cd7dc12e-eb6f-4430-bdb6-12897f319606 ro  quiet splash
 echo	'Loading initial ramdisk ...'
 initrd	/initrd.img-7.1.5-2-liquorix-amd64
+
 _______________________________________________________________________
 
 sudo apt-get update
