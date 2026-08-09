@@ -8,6 +8,12 @@
 
 # grub-customizer tool
 sudo apt install grub-customizer
+# sudo add-apt-repository ppa:trebelnik-stefina/grub-customizer
+# sudo apt update
+# sudo apt install grub-customizer
+# sudo dnf install grub-customizer
+
+#KDE - INSTALL GRUB2 app - https://store.kde.org/p/1127844/
 
 # FIND DRIVE UUID THAT HAS WINDOWS "ntfs"
 
