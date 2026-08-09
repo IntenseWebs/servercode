@@ -5,6 +5,7 @@
 # vi /etc/default/grub
 # UNCOMMENT this line as such.
 # GRUB_DISABLE_OS_PROBER="false"
+sudo update-grub
 
 # grub-customizer tool
 sudo apt install grub-customizer
@@ -13,7 +14,6 @@ sudo apt install grub-customizer
 # sudo apt install grub-customizer
 # sudo dnf install grub-customizer
 
-#KDE - INSTALL GRUB2 app - https://store.kde.org/p/1127844/
 
 # FIND DRIVE UUID THAT HAS WINDOWS "ntfs"
 
@@ -103,6 +103,23 @@ echo	'Loading Linux 7.1.5-2-liquorix-amd64 ...'
 linux	/vmlinuz-7.1.5-2-liquorix-amd64 root=UUID=cd7dc12e-eb6f-4430-bdb6-12897f319606 ro  quiet splash
 echo	'Loading initial ramdisk ...'
 initrd	/initrd.img-7.1.5-2-liquorix-amd64
+
+
+# EXAMPLE 5 - UBUNTU STUDIO
+
+Name: Ubuntu Studio 26.04
+Type: Other
+
+load_video
+set gfxpayload=$linux_gfx_mode
+insmod gzio
+if [ x$grub_platform = xxen ]; then insmod xzio; insmod lzopio; fi
+insmod part_gpt
+insmod ext2
+search --no-floppy --fs-uuid --set=root 75fbd0ed-6fae-45b2-9574-fb5f591a23e1
+linux	/vmlinuz-7.0.0-29-generic root=UUID=4d10a475-601a-41ce-be15-37c715c8063f ro  quiet splash preempt=full threadirqs rcu_nocbs=all
+initrd	/initrd.img-7.0.0-29-generic
+
 
 _______________________________________________________________________
 
