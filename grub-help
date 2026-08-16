@@ -5,6 +5,7 @@
 # vi /etc/default/grub
 # UNCOMMENT this line as such.
 # GRUB_DISABLE_OS_PROBER="false"
+
 sudo update-grub
 
 # grub-customizer tool
@@ -14,6 +15,7 @@ sudo apt install grub-customizer
 # sudo apt install grub-customizer
 # sudo dnf install grub-customizer
 
+https://www.thelinuxvault.net/blog/how-to-manage-efi-boot-manager-entries-on-linux/
 
 # FIND DRIVE UUID THAT HAS WINDOWS "ntfs"
 

@@ -9,7 +9,7 @@ ssh-keygen -t ed25519 -b 256 -C "comment" -f ~/.ssh/id_ed25519
 # DEBIAN--LOGIN AS ROOT - Adding SUDO
 su - root
 sudo apt update && sudo apt upgrade
-apt install sudo
+# apt install sudo
 ----------------------------------------------------------
 # ADD username to /etc/sudoers right under root user
 vi /etc/sudoers

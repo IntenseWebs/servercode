@@ -1,7 +1,6 @@
 # https://pve.proxmox.com/wiki/Open_vSwitch ; https://github.com/openvswitch/ovs/blob/main/debian/openvswitch-switch.README.Debian ; https://github.com/openvswitch/ovs/blob/main/debian/openvswitch-switch-dpdk.README.Debian ;
 
-apt update
-apt install openvswitch-switch
+apt update && apt install openvswitch-switch
 sudo update-alternatives --set ovs-vswitchd \
      /usr/lib/openvswitch-switch-dpdk/ovs-vswitchd-dpdk
 sudo service openvswitch-switch restart

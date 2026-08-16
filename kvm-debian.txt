@@ -16,6 +16,7 @@ Debian /usr/bin/qemu-system-x86_64
 Almalinux /usr/libexec/qemu-kvm
 
 sudo apt install libvirt-daemon-system qemu-kvm qemu-system libvirt-clients bridge-utils libguestfs-tools genisoimage virtinst libosinfo-bin virt-viewer -y
+# sudo apt install qemu-kvm libvirt-clients libvirt-daemon-system virt-manager ovmf swtpm swtpm-tools virtiofsd bridge-utils
 sudo apt install virt-manager -y
 sudo systemctl start libvirtd
 sudo systemctl enable --now libvirtd
