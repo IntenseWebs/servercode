@@ -1,72 +1,5 @@
 # https://pve.proxmox.com/wiki/Open_vSwitch ; https://github.com/openvswitch/ovs/blob/main/debian/openvswitch-switch.README.Debian ; https://github.com/openvswitch/ovs/blob/main/debian/openvswitch-switch-dpdk.README.Debian ;
 
-apt update && apt install openvswitch-switch
-sudo update-alternatives --set ovs-vswitchd \
-     /usr/lib/openvswitch-switch-dpdk/ovs-vswitchd-dpdk
-sudo service openvswitch-switch restart
-
-# Install DEPENDENCIES: Fedora 42 RHEL 10, Rocky 10, Almalinux 10
-https://docs.openvswitch.org/en/latest/intro/install/general/
-https://cloudspinx.com/build-open-vswitch-from-source-on-rocky-almalinux-rhel/
-https://micro-grid.github.io/swtch/apt/
-_____________________________________________________________________________
-
-# For RHEL 10/Rocky 10, Almalinux 10/Fedora systems these can be installed using dnf groupinstall "Development Tools"
-# For Debian systems these can be installed using apt install build-essential
-
-su - root
-cd /usr/src/
-dnf -y install epel-release
-dnf config-manager --set-enabled crb
-dnf groupinstall "Development Tools"
-dnf install @'Development Tools' rpm-build dnf-plugins-core
-dnf -y install gcc make python3-devel openssl-devel \
-    kernel-devel kernel-debug-devel rpm-build desktop-file-utils \
-    groff-base libcap-ng-devel numactl-devel selinux-policy-devel \
-    systemtap-sdt-devel unbound-devel unbound python3-sphinx \
-    libbpf-devel libxdp-devel groff network-scripts python-pyelftools \
-    pyelftools numactl-devel
-dnf install python3-sphinx python3-devel libxdp-devel \
-    numactl-devel selinux-policy-devel systemtap-sdt-devel \
-    unbound unbound-devel sparse
-_____________________________________________________________________________
-# Install DPDK vhost-user-client - Download on Fedora 42
-https://docs.openvswitch.org/en/latest/topics/dpdk/vhost-user/
-
-su - root
-cd /usr/src/
-wget https://fast.dpdk.org/rel/dpdk-24.11.2.tar.xz
-tar xf dpdk-24.11.2.tar.xz
-export DPDK_DIR=/usr/src/dpdk-stable-24.11.2
-cd $DPDK_DIR
-
-export DPDK_BUILD=$DPDK_DIR/build
-meson build
-ninja -C build
-ninja -C build install
-ldconfig
-
-pkg-config --modversion libdpdk
-# ONLY IF NEEDED # export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
-_____________________________________________________________________________
-# Install OVS from Git - Clone Repository: Fedora 42
-https://docs.openvswitch.org/en/latest/intro/install/dpdk/
-https://docs.openvswitch.org/en/latest/intro/install/general/
-https://cloudspinx.com/build-open-vswitch-from-source-on-rocky-almalinux-rhel/
-
-cd ../ovs # or cd /usr/src/ovs
-su - root
-cd/usr/src
-git clone https://github.com/openvswitch/ovs.git # wget https://www.openvswitch.org/releases/openvswitch-$VER.tar.gz
-cd ovs
-git checkout v3.5.0
-./boot.sh
-./configure --with-dpdk=static
-make
-# make rpm-fedora RPMBUILD_OPT="--with dpdk --without check"
-echo 'vm.nr_hugepages=2048' > /etc/sysctl.d/hugepages.conf
-mount -t hugetlbfs none /dev/hugepages
-
 # PRE-REQ CHECKS
 grep -e 'vmx' /proc/cpuinfo
 grep -e 'svm' /proc/cpuinfo
@@ -76,6 +9,28 @@ grep HugePages_ /proc/meminfo
 dmesg | grep -e DMAR -e IOMMU
 cat /proc/cmdline | grep iommu=pt
 cat /proc/cmdline | grep intel_iommu=on
+
+apt update && apt upgrade
+apt install openvswitch-common openvswitch-switch firewalld
+
+echo "Firewalld configuration"
+firewall-cmd --permanent --zone=public --set-target=default
+firewall-cmd --set-default-zone public
+        firewall-cmd --permanent --zone=public --change-interface=enp0s25
+        firewall-cmd --runtime-to-permanent
+        firewall-cmd --reload
+        firewall-cmd --list-all
+        systemctl restart firewalld.service
+        systemctl status firewalld.service
+        systemctl status openvswitch-switch.service
+
+
+systemctl status openvswitch-switch.service
+sudo update-alternatives --set ovs-vswitchd \
+     /usr/lib/openvswitch-switch-dpdk/ovs-vswitchd-dpdk
+sudo service openvswitch-switch restart
+
+
 
 modprobe vfio-pci
 /usr/bin/chmod a+x /dev/vfio
@@ -147,4 +102,79 @@ ovs-vsctl show
 # DPDK (Optional): For high-performance setups, install dpdk and dpdk-devel, then add --with-dpdk to ./configure.
 # Troubleshooting: Check logs in /var/log/openvswitch/ if services fail to start. Ensure the user has permissions (e.g., sudo usermod -aG openvswitch $USER).
 # Source: The tarball is downloaded from openvswitch.org, and the Git repository is at github.com/openvswitch/ovs, tag v3.5.0
+
+
+
+
+
+# Install DEPENDENCIES: Fedora 42 RHEL 10, Rocky 10, Almalinux 10
+https://docs.openvswitch.org/en/latest/intro/install/general/
+https://cloudspinx.com/build-open-vswitch-from-source-on-rocky-almalinux-rhel/
+https://micro-grid.github.io/swtch/apt/
+_____________________________________________________________________________
+
+# For RHEL 10/Rocky 10, Almalinux 10/Fedora systems these can be installed using dnf groupinstall "Development Tools"
+# For Debian systems these can be installed using apt install build-essential
+
+su - root
+cd /usr/src/
+dnf -y install epel-release
+dnf config-manager --set-enabled crb
+dnf groupinstall "Development Tools"
+dnf install @'Development Tools' rpm-build dnf-plugins-core
+dnf -y install gcc make python3-devel openssl-devel \
+    kernel-devel kernel-debug-devel rpm-build desktop-file-utils \
+    groff-base libcap-ng-devel numactl-devel selinux-policy-devel \
+    systemtap-sdt-devel unbound-devel unbound python3-sphinx \
+    libbpf-devel libxdp-devel groff network-scripts python-pyelftools \
+    pyelftools numactl-devel
+dnf install python3-sphinx python3-devel libxdp-devel \
+    numactl-devel selinux-policy-devel systemtap-sdt-devel \
+    unbound unbound-devel sparse
+_
+
+
+
+____________________________________________________________________________
+# Install DPDK vhost-user-client - Download on Fedora 42
+https://docs.openvswitch.org/en/latest/topics/dpdk/vhost-user/
+
+su - root
+cd /usr/src/
+wget https://fast.dpdk.org/rel/dpdk-24.11.2.tar.xz
+tar xf dpdk-24.11.2.tar.xz
+export DPDK_DIR=/usr/src/dpdk-stable-24.11.2
+cd $DPDK_DIR
+
+export DPDK_BUILD=$DPDK_DIR/build
+meson build
+ninja -C build
+ninja -C build install
+ldconfig
+
+pkg-config --modversion libdpdk
+# ONLY IF NEEDED # export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
+__
+
+___________________________________________________________________________
+# Install OVS from Git - Clone Repository: Fedora 42
+https://docs.openvswitch.org/en/latest/intro/install/dpdk/
+https://docs.openvswitch.org/en/latest/intro/install/general/
+https://cloudspinx.com/build-open-vswitch-from-source-on-rocky-almalinux-rhel/
+
+cd ../ovs # or cd /usr/src/ovs
+su - root
+cd/usr/src
+git clone https://github.com/openvswitch/ovs.git # wget https://www.openvswitch.org/releases/openvswitch-$VER.tar.gz
+cd ovs
+git checkout v3.5.0
+./boot.sh
+./configure --with-dpdk=static
+make
+# make rpm-fedora RPMBUILD_OPT="--with dpdk --without check"
+echo 'vm.nr_hugepages=2048' > /etc/sysctl.d/hugepages.conf
+mount -t hugetlbfs none /dev/hugepages
+
+
+
 
