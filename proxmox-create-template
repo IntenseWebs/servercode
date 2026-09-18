@@ -9,7 +9,7 @@ dpkg-reconfigure -plow unattended-upgrades
 
 truncate -s 0 /etc/machine-id
 rm -f /var/lib/dbus/machine-id
-rm -f /etc/ssh/ssh_host_*
+# rm -f /etc/ssh/ssh_host_*
 hostnamectl set-hostname localhost
 rm -f /etc/udev/rules.d/70-persistent-net.rules
 history -c
