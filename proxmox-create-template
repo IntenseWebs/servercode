@@ -1,0 +1,24 @@
+apt update && apt full-upgrade -y
+apt install -y vim curl wget git htop net-tools qemu-guest-agent
+systemctl enable qemu-guest-agent
+timedatectl set-timezone UTC
+apt install -y unattended-upgrades
+dpkg-reconfigure -plow unattended-upgrades
+
+# Anonymize the VM & Sysprep Windows: C:\Windows\System32\Sysprep\sysprep.exe /oobe /generalize /shutdown
+
+truncate -s 0 /etc/machine-id
+rm -f /var/lib/dbus/machine-id
+rm -f /etc/ssh/ssh_host_*
+hostnamectl set-hostname localhost
+rm -f /etc/udev/rules.d/70-persistent-net.rules
+history -c
+cat /dev/null > ~/.bash_history
+find /var/log -type f -exec truncate -s 0 {} \;
+rm -rf /tmp/* /var/tmp/*
+rm -f /var/lib/dhcp/*.leases
+apt clean
+shutdown -h now
+
+# # Via command line - (VM # in Proxmox)
+qm template 100
