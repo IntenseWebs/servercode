@@ -1,3 +1,6 @@
+vi /etc/dhcpcd.conf
+denyinterfaces enp1s0
+
 sudo vi /etc/network/interfaces
 source /etc/network/interfaces.d/*
 auto lo
@@ -49,7 +52,7 @@ sudo nmcli connection modify Example-Connection ipv4.dns "192.168.1.140"
 sudo nmcli connection modify Example-Connection ipv6.dns "2001:db8:1::ffbb"
 sudo nmcli connection modify Example-Connection ipv4.dns-search example.com
 sudo nmcli connection modify Example-Connection ipv6.dns-search example.com
-sudo nmcli connection up Example-Connection
+sudo nmcli connection up Example-Co
 sudo nmcli device status
 
 # MANUAL IPV6
