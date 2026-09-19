@@ -9,34 +9,34 @@ systemctl stop firewalld.service
 systemctl disable firewalld.service
 apt policy firewalld
 
+
+systemctl enable firewalld
+systemctl start firewalld
 firewall-cmd --permanent --add-port=80/tcp
 firewall-cmd --permanent --add-port=443/tcp
 firewall-cmd --permanent --add-source=192.168.1.0/24
 firewall-cmd --add-service=ssh --permanent
-systemctl enable firewalld
 firewall-cmd --reload
 systemctl status firewalld
 firewall-cmd --state
 firewall-cmd --list-services
 firewall-cmd --list-all
 
-# VNC
-# sudo firewall-cmd --zone=public --add-port 5901/tcp --permanent
-# sudo firewall-cmd --zone=public --add-service=vnc-server --permanent
-# sudo firewall-cmd --zone=public --add-source=192.168.1.0/24
-# sudo firewall-cmd --reload
-
-# firewall-cmd --permanent --add-service=vnc-server
-# firewall-cmd --reload
-# sudo firewall-cmd --zone=public --remove-service=vnc-server --permanent
-
 firewall-cmd --get-active-zones
 firewall-cmd --zone=public --list-all
-# firewall-cmd --add-rich-rule='rule family=ipv4 service name=ssh log prefix="Dropped SSH" level="notice" limit value=5/m drop'
-# firewall-cmd --add-rich-rule='rule family=ipv4 source address=10.1.111.21/24 service name=ssh log prefix="SSH Logs" level="notice" accept'
 firewall-cmd --zone=internal --add-source=192.168.1.0/24
 firewall-cmd --zone=public --remove-service=ssh
 firewall-cmd --zone=public --remove-service=dhcpv6-client
 firewall-cmd --runtime-to-permanent
 firewall-cmd --add-service=cockpit --permanent
 firewall-cmd --reload
+
+# VNC
+firewall-cmd --zone=public --add-port 5901/tcp --permanent
+firewall-cmd --zone=public --add-service=vnc-server --permanent
+firewall-cmd --zone=public --add-source=192.168.1.0/24
+sudo firewall-cmd --reload
+
+# sudo firewall-cmd --zone=public --remove-service=vnc-server --permanent
+# firewall-cmd --add-rich-rule='rule family=ipv4 service name=ssh log prefix="Dropped SSH" level="notice" limit value=5/m drop'
+# firewall-cmd --add-rich-rule='rule family=ipv4 source address=10.1.111.21/24 service name=ssh log prefix="SSH Logs" level="notice" accept'

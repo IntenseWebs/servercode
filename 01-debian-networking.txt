@@ -1,13 +1,15 @@
+# ip A to find interface name
+su - root
 vi /etc/dhcpcd.conf
 denyinterfaces enp1s0
 
-sudo vi /etc/network/interfaces
+vi /etc/network/interfaces
 source /etc/network/interfaces.d/*
 auto lo
 iface lo inet loopback
 allow-hotplug enp1s0
 
-sudo vi /etc/network/interfaces.d/enp1s0
+vi /etc/network/interfaces.d/enp1s0
 iface enp1s0 inet static
         address 192.168.1.203
         netmask 255.255.255.0
@@ -15,7 +17,7 @@ iface enp1s0 inet static
         dns-domain intensewebs.com
         dns-nameservers 192.168.1.140 192.168.1.141 192.168.1.124
 
-sudo vi /etc/resolv.conf
+vi /etc/resolv.conf
 domain intensewebs.com
 search intensewebs.com
 nameserver 192.168.1.140
@@ -36,7 +38,10 @@ reboot
 ~
 .
 
-___________________________________________________________________________
+----------------------------------------------------------
+# TO REMOVE OLD KEYS FROM known_hosts file
+ssh-keygen -f "/home/privacy/.ssh/known_hosts" -R "192.168.1.124"
+_________________________________________________________________________
 # OPTIONAL NOT NEEDED METHODS
 # IF DESIRING TO USE Netork Manager: sudo apt install network-manager
 ip link list

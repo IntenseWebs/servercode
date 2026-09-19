@@ -8,6 +8,7 @@ ssh-keygen -t ed25519 -b 256 -C "comment" -f ~/.ssh/id_ed25519
 # ENABLE root access during OS install with password but don't enable SSH remote login for 'root'.
 # DEBIAN--LOGIN AS ROOT - Adding SUDO
 su - root
+# Disable CDROM REPOSITORY: vi /etc/apt/sources.list
 sudo apt update && sudo apt upgrade
 # apt install sudo
 ----------------------------------------------------------

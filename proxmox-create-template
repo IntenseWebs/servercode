@@ -5,7 +5,7 @@ timedatectl set-timezone UTC
 apt install -y unattended-upgrades
 dpkg-reconfigure -plow unattended-upgrades
 
-# Anonymize the VM & Sysprep Windows: C:\Windows\System32\Sysprep\sysprep.exe /oobe /generalize /shutdown
+# Anonymize the VM or Sysprep Windows: C:\Windows\System32\Sysprep\sysprep.exe /oobe /generalize /shutdown
 
 truncate -s 0 /etc/machine-id
 rm -f /var/lib/dbus/machine-id
@@ -20,5 +20,5 @@ rm -f /var/lib/dhcp/*.leases
 apt clean
 shutdown -h now
 
-# # Via command line - (VM # in Proxmox)
+# # Via command line clone VM or below (VM # in Proxmox)
 qm template 100
