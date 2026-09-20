@@ -1,5 +1,4 @@
-# Bind 9 DNS CHEAT SHEET IS BASED ON DEBIAN - REDHAT / FEDORA use completely different folder structure than DEBIAN for bind:
-https://www.isc.org/bind/
+# Bind 9 DNS CHEAT SHEET IS BASED ON DEBIAN - REDHAT/FEDORA use different folder structure bind: https://www.isc.org/bind/
 
 # DEBIAN # /etc/bind # /var/lib/bind
 https://wpcademy.com/how-to-install-bind9-dns-server-on-ubuntu-step-by-step/
@@ -13,26 +12,27 @@ https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/ne
 https://www.cyberciti.biz/faq/linux-unix-bind9-named-configure-views/
 https://www.zytrax.com/books/dns/ch4/#split
 
-# Misc re-used commands
+# INSTALL
+apt update && apt upgrade -y
+apt install -y bind9 bind9utils bind9-doc dnsutils
+cd /etc/bind
+
+# Misc re-used commands # EXECUTE ALL AS ROOT (su - root)
 named -v
 dig -t txt -c chaos VERSION.BIND @192.168.1.140
 rndc flush
-sudo systemctl status named
-sudo systemctl restart bind9
-sudo systemctl status bind9
+systemctl status named
+systemctl restart bind9
+systemctl status bind9
 suso systemctl restart bind9.service
-sudo service bind9 restart
-sudo named-checkconf
-sudo named-checkzone intensewebs.com /var/lib/bind/db.intensewebs.com
-sudo tail -f /var/log/syslog
-
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y bind9 bind9utils bind9-doc dnsutils
-cd /etc/bind
+service bind9 restart
+named-checkconf
+named-checkzone intensewebs.com /var/lib/bind/db.intensewebs.com
+tail -f /var/log/syslog
 
 # Copy/Backup your files
-sudo cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup
-sudo vi /etc/bind/named.conf.options
+cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup
+vi /etc/bind/named.conf.options
  
 acl trustedclients {
         localhost;
@@ -67,43 +67,51 @@ options {
 
 # 4) Define zone files backup the existing file named.conf.local e.g.
 
-sudo cp -f /etc/bind/named.conf.local /etc/bind/bak.named.conf.local.bak
- sudo vi named.conf.local
+cp -f /etc/bind/named.conf.local /etc/bind/bak.named.conf.local.bak
+ vi named.conf.local
  so it looks something like this
   
 zone "intensewebs.com" {
         type master;
         file "/var/lib/bind/db.intensewebs.com";
-        allow-transfer { 192.168.1.141; };
-        also-notify { 192.168.1.141; };
+        allow-transfer { 192.168.1.141; 192.168.1.142; 192.168.1.143;};
+        also-notify { 192.168.1.141; 192.168.1.142; 192.168.1.143;};
 };
 
-zone "nukvm.org" {
+zone "iweb.corp" {
         type master;
-        file "/var/lib/bind/db.nukvm.org";
-        allow-transfer { 192.168.1.141; };
-        also-notify { 192.168.1.141; };
+        file "/var/lib/bind/db.iweb.corp";
+        allow-transfer { 192.168.1.141; 192.168.1.142; 192.168.1.143;};
+        also-notify { 192.168.1.141; 192.168.1.142; 192.168.1.143;};
 };
 
 zone "iweb.city" {
         type master;
         file "/var/lib/bind/db.iweb.city";
-        allow-transfer { 192.168.1.141; };
-        also-notify { 192.168.1.141; };
+        allow-transfer { 192.168.1.141; 192.168.1.142; 192.168.1.143;};
+        also-notify { 192.168.1.141; 192.168.1.142; 192.168.1.143;};
+};
+
+zone "nukvm.org" {
+        type master;
+        file "/var/lib/bind/db.nukvm.org";
+        allow-transfer { 192.168.1.141; 192.168.1.142; 192.168.1.143;};
+        also-notify { 192.168.1.141; 192.168.1.142; 192.168.1.143;};
 };
 
 zone "1.168.192.in-addr.arpa" {
         type master;
         file "/var/lib/bind/db.1.168.192";
-        allow-transfer { 192.168.1.141; };
-        also-notify { 192.168.1.141; };
+        allow-transfer { 192.168.1.141; 192.168.1.142; 192.168.1.143;};
+        also-notify { 192.168.1.141; 192.168.1.142; 192.168.1.143;};
 };
+
  check the file for errors
- sudo named-checkconf
+ named-checkconf
  
 # 5) Create a forward lookup zone in /var/lib/bind. Copy an existing file to one with the name used before e.g.
-# sudo cp /etc/bind/db.local /var/lib/bind/db.intensewebs.com
-# sudo vi db.intensewebs.com
+# cp /etc/bind/db.local /var/lib/bind/db.intensewebs.com
+# vi db.intensewebs.com
 
 $ORIGIN intensewebs.com.
 $TTL    604800
@@ -154,11 +162,11 @@ ipa1    IN      A      192.168.1.124
 ipa2    IN      A      192.168.1.125
 _____________________________________________________________________ex
 # check the file syntax
-sudo named-checkzone intensewebs.com db.intensewebs.com
+named-checkzone intensewebs.com db.intensewebs.com
  
 6) Create a reverse lookup zone
 using same name specified in named-  edit the file e.g.
-sudo vi db.1.168.192
+vi db.1.168.192
 
 $TTL    604800
 @       IN      SOA     ns1.intensewebs.com. dns.intensewebs.com. (
@@ -187,7 +195,7 @@ ns2.intensewebs.com.    IN      A       192.168.1.141
 222     IN      PTR     sd.intensewebs.com
 223     IN      PTR     superdog.intensewebs.com
 
-sudo named-checkzone 1.168.192.in-addr.arpa db.1.168.192
+named-checkzone 1.168.192.in-addr.arpa db.1.168.192
  
 7) Edit the server's DNS entry to use it's own DNS server
 
@@ -199,13 +207,13 @@ nameserver 192.168.1.141
 
 
 8) Start and test DNS
-sudo systemctl start named
-sudo systemctl enable named
+systemctl start named
+systemctl enable named
 
-sudo systemctl start bind9
+systemctl start bind9
 
- sudo systemctl status bind9
- sudo systemctl status named
+ systemctl status bind9
+ systemctl status named
  
  test DNS is working e.g.
  host git.intensewebs.com
@@ -214,18 +222,19 @@ sudo systemctl start bind9
 
 ---------------------------------------
 
-SECONDARY
-sudo vi /etc/bind/named.conf.local
+SECONDARY - update networking 'resolv.conf and /etc/network/interfaces * files with new DNS servers. ADD FIREWALL Settings i.e. firewall-cmd --permanent --add-service=dns && firewall-cmd --reload
+
+vi /etc/bind/named.conf.local
 
 zone "intensewebs.com" {
         type slave;
         file "/var/lib/bind/db.intensewebs.com";
-	masters { 192.168.1.140; };
+        masters { 192.168.1.140; };
 };
 
-zone "nukvm.org" {
+zone "iweb.corp" {
         type slave;
-        file "/var/lib/bind/db.nukvm.org";
+        file "/var/lib/bind/db.iweb.corp";
         masters { 192.168.1.140; };
 };
 
@@ -235,16 +244,24 @@ zone "iweb.city" {
         masters { 192.168.1.140; };
 };
 
+zone "nukvm.org" {
+        type slave;
+        file "/var/lib/bind/db.nukvm.org";
+        masters { 192.168.1.140; };
+};
+
 zone "1.168.192.in-addr.arpa" {
         type slave;
         file "/var/lib/bind/db.1.168.192";
-	masters { 192.168.1.140; };
+        masters { 192.168.1.140; };
 };
 
-sudo systemctl restart bind9
-sudo systemctl status bind9
+systemctl restart bind9
+systemctl status bind9
 
-sudo vi /etc/bind/named.conf.options
+# Copy/Backup your files
+cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup
+vi /etc/bind/named.conf.options
  
 acl trustedclients {
         localhost;

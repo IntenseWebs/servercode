@@ -31,6 +31,10 @@ firewall-cmd --runtime-to-permanent
 firewall-cmd --add-service=cockpit --permanent
 firewall-cmd --reload
 
+#BIND 9 DNS
+firewall-cmd --add-port=53/tcp --permanent
+firewall-cmd --reload
+
 # VNC
 firewall-cmd --zone=public --add-port 5901/tcp --permanent
 firewall-cmd --zone=public --add-service=vnc-server --permanent
